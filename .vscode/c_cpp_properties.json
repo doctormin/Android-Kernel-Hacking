@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "~kernel/goldfish/include",
+                "~kernel/goldfish/include/linux",
                 "~kernel/goldfish/arch/arm/include"
             ],
             "defines": [
