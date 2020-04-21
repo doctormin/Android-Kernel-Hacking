@@ -24,24 +24,51 @@ struct prinfo {
   char comm[64];           // name of program executed
 };
 
+/**
+ * get_prinfo - save the information (of a given process) in task_struct into prinfo
+ * @tar: the target in which the information of the process is saved
+ * @src: point to the task_struct which belongs to the process
+ */ 
 void get_prinfo(struct prinfo* tar, struct task_struct* src){
   tar->parent_id        = (src->parent) ? src->parent->pid : 0;
   tar->pid              = src->pid;
-  /*reference:
+  /**
+   *reference:
    *in list.h:   int list_empty(const struct list_head *head)
    *in list.h:   #define list_first_entry(ptr, type, member) list_entry((ptr)->next, type, member)
    *in sched.h:  struct list_head children; 
    */
   tar->first_child_pid  = list_empty(&(src->children)) ? 0 : list_first_entry(&(src->children), struct task_struct, siblings)->pid;
   tar->next_sibling_pid = list_empty(&(src->sibling)) ? 0 : list_entry((src->sibling).next, struct task_struct, siblings)->pid;
-  tar->state            = src->state
-  tar->uid              = src->cred->uid
+  tar->state            = src->state;
+  tar->uid              = src->cred->uid;
   /*char *get_task_comm(char *buf, struct task_struct *tsk)*/
-  get_task_comm(tar->comm, src)
+  get_task_comm(tar->comm, src);
 }
 
+/**
+ * DFS - using DFS algorithm to interate through the process tree whose node is root
+ * @root: the root of the process tree and the start point of DFS
+ * @buf: the linked-list in which we save the process prinfo gotten through DFS
+ * @nr: the length of the linked-list buf
+ */ 
 void DFS(struct task_struct* root, struct prinfo* buf, int nr){
-
+  get_prinfo(&(buf[nr++]), root);//save the node of tree into the buffer
+  /**
+   *reference
+   *in list.h:
+   *@pos:	the &struct list_head to use as a loop cursor.
+   *@head:	the head for your list.
+   *#define list_for_each(pos, head) \
+	 *       for (pos = (head)->next; pos != (head); pos = pos->next)
+   */
+  struct list_head* iterator;
+  struct task_struct* next_node; 
+  //iterating through all the children of the root
+  list_fot_each(iterator, &(root->children)){
+    next_node = list_entry(iterator, struct task_struct, sibling);
+    DFS(next_node, buf, nr);
+  }
 }
 
 static int ptree(struct prinfo* buf, int* nr) {
