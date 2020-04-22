@@ -7,7 +7,7 @@
 #include <linux/slab.h>
 #include <asm/uaccess.h> 
 
-#define VERSION "0.0.1"
+#define VERSION "0.0.3"
 #define NAME "Yimin-ptree"
 #define __NR_ptree 356
 
@@ -27,6 +27,7 @@ struct prinfo {
   char comm[64];           // name of program executed
 };
 
+static int ptree_counter;
 /**
  * get_prinfo - save the information (of a given process) in task_struct into prinfo
  * @tar: the target in which the information of the process is saved
@@ -55,8 +56,13 @@ void get_prinfo(struct prinfo* tar, struct task_struct* src){
  * @buf: the linked-list in which we save the process prinfo gotten through DFS
  * @nr: the length of the linked-list buf
  */ 
-void DFS(struct task_struct* root, struct prinfo* buf, int nr){
-  get_prinfo(&(buf[nr++]), root);//save the node of tree into the buffer
+void DFS(struct task_struct* root, struct prinfo* buf, int* nr){
+  struct list_head* iterator;
+  struct task_struct* next_node;
+  if(*nr <= MAXBUFFER){
+     get_prinfo(&(buf[(*nr)++]), root);//save the node of tree into the buffer
+  }
+  ptree_counter++;
   /**
    *reference
    *in list.h:
@@ -64,9 +70,7 @@ void DFS(struct task_struct* root, struct prinfo* buf, int nr){
    *@head:	the head for your list.
    *#define list_for_each(pos, head) \
 	 *       for (pos = (head)->next; pos != (head); pos = pos->next)
-   */
-  struct list_head* iterator;
-  struct task_struct* next_node; 
+   */ 
   //iterating through all the children of the root
   list_for_each(iterator, &(root->children)){
     next_node = list_entry(iterator, struct task_struct, sibling);
@@ -74,18 +78,22 @@ void DFS(struct task_struct* root, struct prinfo* buf, int nr){
   }
 }
 
-static int ptree(struct prinfo* buf, int* nr) {
+int ptree(struct prinfo* buf, int* nr) {
   //allocate space for parameters (in the kernel space)
-  int nr_in_kernel; //nr_in_kernel is the counterpart for nr in kernel space
+  ptree_counter = 0;
+  int nr_in_kernel = 0; //nr_in_kernel is the counterpart for nr in kernel space
   struct prinfo* buf_in_kernel =  (struct prinfo *)kmalloc(MAXBUFFER * sizeof(struct prinfo), GFP_KERNEL); //buf_in_kernel is the counterpart for buf in kernel space
+
   read_lock(&tasklist_lock);
-  DFS(&init_task, buf_in_kernel, nr_in_kernel);//main procedure: do DFS search and link the buf_in_kernel in DFS order
+  DFS(&init_task, buf_in_kernel, &nr_in_kernel);//main procedure: do DFS search and link the buf_in_kernel in DFS order
   read_unlock(&tasklist_lock);
-  /* `copy_to_user` will copy `the second parameter` in the kernel space into `the first parameter` in the user space
+  /* *
+   * reference:
+   * copy_to_user - copy the second parameter in the kernel space into the first parameter in the user space
    * @the first parameter: void *
    * @thr second parameter: void *
    * return 0 if succeed 
-   * return >0 if failed 
+   * return >0 if faile 
   */
   if(copy_to_user(buf, buf_in_kernel, MAXBUFFER * sizeof(struct prinfo))){
     //the copy procedure failed
@@ -99,12 +107,12 @@ static int ptree(struct prinfo* buf, int* nr) {
   }
 
   kfree(buf_in_kernel);
-  return 0;
+  printk(KERN_ALERT "normal return \n");
+  return ptree_counter;
 }
 
-
 static int (*oldcall)(void);  // function pointer
-static int ptree_init(void) {
+static int __init ptree_init(void) {
   // syscall points to the syscall table
   long* syscall = (long*)0xc000d8c4;
   oldcall = (int (*)(void))(syscall[__NR_ptree]);  // preserve the original sys call
@@ -113,7 +121,7 @@ static int ptree_init(void) {
   return 0;
 }
 
-static void ptree_exit(void) {
+static void __exit ptree_exit(void) {
   long* syscall = (long*)0xc000d8c4;
   syscall[__NR_ptree] = (unsigned long)oldcall;  // retrieve the original sys call
   printk(KERN_INFO "%s: version %s unloaded successfully\n", NAME, VERSION);

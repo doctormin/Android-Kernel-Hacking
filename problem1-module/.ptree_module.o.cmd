@@ -1,8 +1,8 @@
-cmd_/home/minozhao/OperatingSystemPrj1/module/ptree_module.o := arm-linux-androideabi-gcc -Wp,-MD,/home/minozhao/OperatingSystemPrj1/module/.ptree_module.o.d  -nostdinc -isystem /home/minozhao/android-ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.9/include -I/home/minozhao/kernel/goldfish/arch/arm/include -Iarch/arm/include/generated -Iinclude  -include /home/minozhao/kernel/goldfish/include/linux/kconfig.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-goldfish/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -fno-pic -marm -fno-dwarf2-cfi-asm -mabi=aapcs-linux -mno-thumb-interwork -funwind-tables -D__LINUX_ARM_ARCH__=7 -march=armv7-a -msoft-float -Uarm -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fomit-frame-pointer -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ptree_module)"  -D"KBUILD_MODNAME=KBUILD_STR(ptree_module)" -c -o /home/minozhao/OperatingSystemPrj1/module/ptree_module.o /home/minozhao/OperatingSystemPrj1/module/ptree_module.c
+cmd_/home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.o := arm-linux-androideabi-gcc -Wp,-MD,/home/minozhao/OperatingSystemPrj1/problem1-module/.ptree_module.o.d  -nostdinc -isystem /home/minozhao/android-ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.9/include -I/home/minozhao/kernel/goldfish/arch/arm/include -Iarch/arm/include/generated -Iinclude  -include /home/minozhao/kernel/goldfish/include/linux/kconfig.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-goldfish/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -fno-pic -marm -fno-dwarf2-cfi-asm -mabi=aapcs-linux -mno-thumb-interwork -funwind-tables -D__LINUX_ARM_ARCH__=7 -march=armv7-a -msoft-float -Uarm -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fomit-frame-pointer -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ptree_module)"  -D"KBUILD_MODNAME=KBUILD_STR(ptree_module)" -c -o /home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.o /home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.c
 
-source_/home/minozhao/OperatingSystemPrj1/module/ptree_module.o := /home/minozhao/OperatingSystemPrj1/module/ptree_module.c
+source_/home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.o := /home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.c
 
-deps_/home/minozhao/OperatingSystemPrj1/module/ptree_module.o := \
+deps_/home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.o := \
   include/linux/init.h \
     $(wildcard include/config/modules.h) \
     $(wildcard include/config/hotplug.h) \
@@ -459,6 +459,6 @@ deps_/home/minozhao/OperatingSystemPrj1/module/ptree_module.o := \
   /home/minozhao/kernel/goldfish/arch/arm/include/asm/unified.h \
     $(wildcard include/config/arm/asm/unified.h) \
 
-/home/minozhao/OperatingSystemPrj1/module/ptree_module.o: $(deps_/home/minozhao/OperatingSystemPrj1/module/ptree_module.o)
+/home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.o: $(deps_/home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.o)
 
-$(deps_/home/minozhao/OperatingSystemPrj1/module/ptree_module.o):
+$(deps_/home/minozhao/OperatingSystemPrj1/problem1-module/ptree_module.o):
