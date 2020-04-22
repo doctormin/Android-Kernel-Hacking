@@ -3,6 +3,9 @@
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/unistd.h>
+#include <linux/list.h>
+#include <linux/slab.h>
+#include <asm/uaccess.h> 
 
 #define VERSION "0.0.1"
 #define NAME "Yimin-ptree"
@@ -30,7 +33,7 @@ struct prinfo {
  * @src: point to the task_struct which belongs to the process
  */ 
 void get_prinfo(struct prinfo* tar, struct task_struct* src){
-  tar->parent_id        = (src->parent) ? src->parent->pid : 0;
+  tar->parent_pid       = (src->parent) ? src->parent->pid : 0;
   tar->pid              = src->pid;
   /**
    *reference:
@@ -38,8 +41,8 @@ void get_prinfo(struct prinfo* tar, struct task_struct* src){
    *in list.h:   #define list_first_entry(ptr, type, member) list_entry((ptr)->next, type, member)
    *in sched.h:  struct list_head children; 
    */
-  tar->first_child_pid  = list_empty(&(src->children)) ? 0 : list_first_entry(&(src->children), struct task_struct, siblings)->pid;
-  tar->next_sibling_pid = list_empty(&(src->sibling)) ? 0 : list_entry((src->sibling).next, struct task_struct, siblings)->pid;
+  tar->first_child_pid  = list_empty(&(src->children)) ? 0 : list_first_entry(&(src->children), struct task_struct, sibling)->pid;
+  tar->next_sibling_pid = list_empty(&(src->sibling)) ? 0 : list_entry((src->sibling).next, struct task_struct, sibling)->pid;
   tar->state            = src->state;
   tar->uid              = src->cred->uid;
   /*char *get_task_comm(char *buf, struct task_struct *tsk)*/
@@ -65,7 +68,7 @@ void DFS(struct task_struct* root, struct prinfo* buf, int nr){
   struct list_head* iterator;
   struct task_struct* next_node; 
   //iterating through all the children of the root
-  list_fot_each(iterator, &(root->children)){
+  list_for_each(iterator, &(root->children)){
     next_node = list_entry(iterator, struct task_struct, sibling);
     DFS(next_node, buf, nr);
   }
@@ -75,9 +78,8 @@ static int ptree(struct prinfo* buf, int* nr) {
   //allocate space for parameters (in the kernel space)
   int nr_in_kernel; //nr_in_kernel is the counterpart for nr in kernel space
   struct prinfo* buf_in_kernel =  (struct prinfo *)kmalloc(MAXBUFFER * sizeof(struct prinfo), GFP_KERNEL); //buf_in_kernel is the counterpart for buf in kernel space
-  
   read_lock(&tasklist_lock);
-  DFS(init_task, buf_in_kernel, nr_in_kernel);//main procedure: do DFS search and link the buf_in_kernel in DFS order
+  DFS(&init_task, buf_in_kernel, nr_in_kernel);//main procedure: do DFS search and link the buf_in_kernel in DFS order
   read_unlock(&tasklist_lock);
   /* `copy_to_user` will copy `the second parameter` in the kernel space into `the first parameter` in the user space
    * @the first parameter: void *
@@ -85,7 +87,7 @@ static int ptree(struct prinfo* buf, int* nr) {
    * return 0 if succeed 
    * return >0 if failed 
   */
-  if(copy_to_user(buf, buf_in_kernel, MAXBUFFER * sizeof(struct printfo))){
+  if(copy_to_user(buf, buf_in_kernel, MAXBUFFER * sizeof(struct prinfo))){
     //the copy procedure failed
     printk(KERN_ERR "failed in function copy_to_user(buf_in_kernel -> buf)");
     return -1;

@@ -4,9 +4,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "~kernel/goldfish/include",
-                "~kernel/goldfish/include/linux",
-                "~kernel/goldfish/arch/arm/include"
+                "~/kernel/goldfish/include",
+                "~/kernel/goldfish/include/linux",
+                "~/kernel/goldfish/arch/arm/include"
             ],
             "defines": [
                 "__KERNEL__",
@@ -19,8 +19,8 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}/**",
-                    "~kernel/goldfish/include",
-                    "~kernel/goldfish/arch/arm/include"
+                    "~/kernel/goldfish/include",
+                    "~/kernel/goldfish/arch/arm/include"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
