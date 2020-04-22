@@ -44,7 +44,6 @@ void print_tree(struct prinfo *buf, int nr){
         }
         num_of_tab[i] = num_of_tab[parent_index] + 1;
     }
-    printf("nr == %d\n", nr);
     //output
     for(i = 0; i < nr; i++){
         for(j = 0; j < num_of_tab[i]; j++)
