@@ -18,6 +18,7 @@ int main()
             //!exception
             printf("calling ptree_test failed in child process!\n");
         }
+        exit(0); //in case that execl failed
 	}
     //!exception
     else if (child == -1)
