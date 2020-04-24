@@ -9,6 +9,7 @@
         "syscall.h": "c",
         "cstdarg": "c",
         "cstdio": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "semaphore.h": "c"
     }
 }
