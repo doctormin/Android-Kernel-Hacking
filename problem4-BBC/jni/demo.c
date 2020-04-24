@@ -9,7 +9,7 @@ pthread_mutex_t cntMutex, checkRack, queueMutex, CK, CA, CM;
 sem_t *cashierAvailable;
 pthread_t *Cooks, *Cashiers, *Customers;
 sem_t finish, rackFull, rackEmpty, cashiersAllBusy;
-int rack = 0, customersServed = 0, cooks, cashiers, customers, racksize, head = 0, tail = -1, waitForCashier = 0, waitForBurger = 0;
+int rack = 0, customersServed = 0, cooks, cashiers, customers, racksize, head = 0, tail = -1, waitForCashier = 0, waitFokrBurger = 0;
 int *sleepingQueue;
 struct sigaction actions;
 void thread_exit_handler(int sig)
