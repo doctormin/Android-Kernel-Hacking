@@ -6,11 +6,13 @@
 
 pthread_t *cook_thread, *cashier_thread, *customer_thread;
 int num_of_cooks, num_of_cashiers, num_of_customers, racksize;
+int cashier_waiting_for_burger;
 int customer_served; //the number of customers that has been served
 int burgers_on_rack; //the number of available burgers 
 pthread_mutex_t customer_count; //mutex for accessing `customer_served`
 pthread_mutex_t cook_mutex; //only one cook can check rack(and then make one burger) at a time
 pthread_mutex_t accessing_rack;
+pthread_mutex_t cashier_mutex;
 sem_t all_served;
 sem_t rack_not_full;
 sem_t rack_not_empty;
@@ -28,7 +30,7 @@ void *cook(void* num){
     int cook_id = *(int *) num;
     while(true){
         pthread_mutex_lock(&cook_mutex);
-        
+
         //* Step1 - check the rack
         pthread_mutex_lock(&accessing_rack);
         if(burgers_on_rack == racksize){ //rack is full
@@ -37,14 +39,25 @@ void *cook(void* num){
             pthread_mutex_lock(&accessing_rack);
         }
 
-        //* Step2 - make the burger
+        //* Step2 - make the burger and put it on the rack
         sleep(cook_id/3);
         burgers_on_rack++;
         printf("Cook [%d] makes a burger.\n", cook_id);
 
-        //* Step3 - signal rack_not_empty if the burger just  made is the first one in the rack
-        if(burgers_on_rack == 1){
-            signal(&rack_not_empty);
+        //* Step3 - signal rack_not_empty if the burger just made is the first one in the rack
+        if(burgers_on_rack == 1 && cashier_waiting_for_burger){
+            /*! 
+             * when there are no cashiers waiting, 
+             * even though the cook makes the first burger, 
+             * he/she should not signal(rack_not_empty) !!!!
+             * Reason:
+             * If one cook come and make the first burger and signal(rack_not_empty)
+             * Then two cashiers come, the first one will take the only burger
+             * But the second one will pass wait(rack_not_empty) and also takes a burger
+             * even though there are no burgers.
+             * */
+            sem_post(&rack_not_empty);
+            cashier_waiting_for_burger--;
         }
         pthread_mutex_unlock(&accessing_rack);
         pthread_mutex_unlock(&cook_mutex);
@@ -52,15 +65,37 @@ void *cook(void* num){
 }
 void *cashier(void* num){
     int cashier_id = *(int *) num;
+    while(true){
+        pthread_mutex_lock(&cashier_mutex);
+        //TODO: Step1 - check customer_waiting ?
+         
+        //* Step2 -  fetch burger and serve
+        pthread_mutex_lock(&accessing_rack);
+        if(burgers_on_rack == 0){
+            cashier_waiting_for_burger++; //showing that there are cashiers waiting 
+            pthread_mutex_unlock(&accessing_rack); //enable cooks to put burgers on the rack
+            sem_wait(rack_not_empty);
+            pthread_mutex_lock(&accessing_rack);
+        }
+        burgers_on_rack--;
+        printf("Cashier [%d] takes a burger to customer.\n", cashier_id);
 
+        //* Step3 - signal rack_not_full after fetching a burger from the full rack
+        if(burgers_on_rack == racksize - 1){
+            sem_post(&rack_not_full);
+        }
+        pthread_mutex_unlock(&accessing_rack);
 
-    //change customer_served and check all_served ? 
-    pthread_mutex_lock(&customer_count);
-    ++customer_served;
-    if(customer_served == num_of_customers){
-        sem_post(&all_served);
+        //* Step4 - change customer_served and check all_served ? 
+        pthread_mutex_lock(&customer_count);
+        ++customer_served;
+        if(customer_served == num_of_customers){
+            sem_post(&all_served);
+        }
+        pthread_mutex_unlock(&customer_count);
+
+        pthread_mutex_unlock(&cashier_mutex);
     }
-    pthread_mutex_unlock(&customer_count);
 }
 void *customer(void* num){
     int customer_id = *(int *) num;
@@ -104,9 +139,10 @@ int main(int argc, char ** argv){
     pthread_mutex_init(&customer_count, NULL);
     pthread_mutex_init(&cook_mutex, NULL);
     pthread_mutex_init(&accessing_rack, NULL);
+    pthread_mutex_init(&cashier_mutex, NULL);
     sem_init(&all_served, 0, 0);
     sem_init(&rack_not_full, 0, 0); //rack_npt_full == 0 iff rack is full
-    sem_init(&rack_not_empty, 0, 0);
+    sem_init(&rack_not_empty, 0, 0); //rack_not_empty == 0 iff rack is empty
 
     //* Step3 - create threads
     int i = 0;
@@ -131,6 +167,7 @@ int main(int argc, char ** argv){
     pthread_mutex_destroy(&customer_count);
     pthread_mutex_destroy(&cook_mutex);
     pthread_mutex_destroy(&accessing_rack);
+    pthread_mutex_destroy(&cashier_mutex);
     sem_destroy(&all_served);
     sem_destroy(&rack_not_full);
     sem_destroy(&rack_not_empty);
