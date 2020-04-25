@@ -1,0 +1,10 @@
+-------install and unistall the module-------
+>> root@generic:/data/misc # insmod ptree_module.ko
+(in kernel log) << <6>Yimin-ptree: version 0.0.4 loaded successfully
+>> root@generic:/data/misc # rmmod ptree_module.ko
+(in kernel log) << <6>Yimin-ptree: version 0.0.4 unloaded successfully
+
+
+
+
+

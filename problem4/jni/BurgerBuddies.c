@@ -113,7 +113,7 @@ void *cashier(void* num){
         }
         burgers_on_rack--;
         printf("Cashier [%d] takes a burger to customer [%d].\n", cashier_id, customer_id);
-        printf("burgers_on_rack is %d\n", burgers_on_rack);
+        printf("There are %d burgers on the rack\n", burgers_on_rack);
         //* Step3 - signal rack_not_full after fetching a burger from the full rack
         if(burgers_on_rack == racksize - 1 && cook_waiting_for_rack){
             sem_post(&rack_not_full);

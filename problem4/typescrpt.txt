@@ -1,0 +1,60 @@
+root@generic:/data/misc # ./BBC 2 3 6 3                                        
+cook_threads [2], cashier_threads [3], customer_threads [6]
+Begin run.
+Cook [1] makes a burger.
+There are 1 burgers on the rack
+Customer [4] comes.
+Cashier [3] accepts the order of customer [4].
+Cashier [3] takes a burger to customer [4].
+There are 0 burgers on the rack
+Cook [2] makes a burger.
+There are 1 burgers on the rack
+Cook [1] makes a burger.
+There are 2 burgers on the rack
+Cook [1] makes a burger.
+There are 3 burgers on the rack
+Customer [3] comes.
+Cashier [3] accepts the order of customer [3].
+Cashier [3] takes a burger to customer [3].
+There are 2 burgers on the rack
+Cook [2] makes a burger.
+There are 3 burgers on the rack
+=========rack is full !=========
+Customer [1] comes.
+Cashier [3] accepts the order of customer [1].
+Cashier [3] takes a burger to customer [1].
+There are 2 burgers on the rack
+Cook [1] makes a burger.
+There are 3 burgers on the rack
+=========rack is full !=========
+Customer [5] comes.
+Cashier [3] accepts the order of customer [5].
+Cashier [3] takes a burger to customer [5].
+There are 2 burgers on the rack
+Customer [2] comes.
+Cook [2] makes a burger.
+There are 3 burgers on the rack
+Cashier [3] accepts the order of customer [2].
+Cashier [3] takes a burger to customer [2].
+There are 2 burgers on the rack
+Cook [1] makes a burger.
+There are 3 burgers on the rack
+Customer [6] comes.
+Cashier [3] accepts the order of customer [6].
+Cashier [3] takes a burger to customer [6].
+There are 2 burgers on the rack
+Cook [1] makes a burger.
+There are 3 burgers on the rack
+
+------------------p.s.-----------------------
+1. "=========rack is full !=========" will be printed when the rack is full of burgers and cooks are waiting for making burgers.
+2. "There are .. burgers on the rack" will be printed everytime the cook makes a burger or a cashier takes away a burger.
+
+------------exception handlering-------------
+1. input wrong
+root@generic:/data/misc # ./BBC
+input format should be "BBC #cook_threads #cashier_threads #customer_threads #RackSize"
+root@generic:/data/misc # ./BBC 1 2
+input format should be "BBC #cook_threads #cashier_threads #customer_threads #RackSize"
+root@generic:/data/misc # ./BBC 1 2 a c                                    
+"#cook_threads #cashier_threads #customer_threads #RackSize" should be positive numbers
