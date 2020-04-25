@@ -11,6 +11,7 @@ int Queue_tail, Queue_head;
 int num_of_cooks, num_of_cashiers, num_of_customers, racksize;
 int cashier_waiting_for_burger; //1 or 0
 int cashier_waiting_for_customer;
+int cook_waiting_for_rack;
 int customer_served; //the number of customers that has been served
 int burgers_on_rack; //the number of available burgers 
 pthread_mutex_t customer_count; //mutex for accessing `customer_served`
@@ -39,6 +40,7 @@ void enQueue(int num){
 int deQueue(){
     int tmp = Queue[Queue_head];
     Queue_head = (Queue_head + 1) % (num_of_customers + 1);
+    return tmp;
 }
 
 int Queue_length(){
@@ -46,24 +48,27 @@ int Queue_length(){
         return (Queue_tail - Queue_head);
     }
     else{
-        return (num_of_customers + 1 - (Queue_head - Queue_tail))
+        return (num_of_customers + 1 - (Queue_head - Queue_tail));
     }
 }
 void *cook(void* num){
     int cook_id = *(int *) num;
-    while(true){
+    while(1){
         //* Step1 - make the burger 
-        sleep(cook_id/3);
+        sleep(cook_id <= 3 ? cook_id : cook_id/3);
         //* Step2 - check the rack and wait or put the burger on it
         pthread_mutex_lock(&cook_mutex);
         pthread_mutex_lock(&accessing_rack);
         if(burgers_on_rack == racksize){ //rack is full
+            cook_waiting_for_rack++;
+            printf("=========rack is full !=========\n");
             pthread_mutex_unlock(&accessing_rack); //enable cashiers to fetch burgers from the rack
             sem_wait(&rack_not_full); //will be signaled when a cashier give out one burger(before which the rack is full)
             pthread_mutex_lock(&accessing_rack);
         }
         burgers_on_rack++;
         printf("Cook [%d] makes a burger.\n", cook_id);
+        printf("There are %d burgers on the rack\n", burgers_on_rack);
         //* Step3 - signal rack_not_empty if the burger just made is the first one in the rack
         if(burgers_on_rack == 1 && cashier_waiting_for_burger){
             /*! 
@@ -85,7 +90,7 @@ void *cook(void* num){
 } 
 void *cashier(void* num){
     int cashier_id = *(int *) num;
-    while(true){
+    while(1){
         //* Step1 - waiting for and serve a customer
         pthread_mutex_lock(&accessing_Queue);
         if(Queue_length() == 0){//no customers in the Queue now
@@ -103,15 +108,16 @@ void *cashier(void* num){
         if(burgers_on_rack == 0){
             ++cashier_waiting_for_burger; //showing that there are cashiers waiting 
             pthread_mutex_unlock(&accessing_rack); //enable cooks to put burgers on the rack
-            sem_wait(rack_not_empty);
+            sem_wait(&rack_not_empty);
             pthread_mutex_lock(&accessing_rack);
         }
         burgers_on_rack--;
         printf("Cashier [%d] takes a burger to customer [%d].\n", cashier_id, customer_id);
-
+        printf("burgers_on_rack is %d\n", burgers_on_rack);
         //* Step3 - signal rack_not_full after fetching a burger from the full rack
-        if(burgers_on_rack == racksize - 1){
+        if(burgers_on_rack == racksize - 1 && cook_waiting_for_rack){
             sem_post(&rack_not_full);
+            cook_waiting_for_rack--;
         }
         pthread_mutex_unlock(&accessing_rack);
 
@@ -189,14 +195,17 @@ int main(int argc, char ** argv){
     int max_tmp = (num_of_cooks > num_of_cashiers) ? num_of_cooks : num_of_cashiers;
     max_tmp = (max_tmp > num_of_customers) ? max_tmp : num_of_customers;
     int *max_num = (int *)malloc((max_tmp+1) * sizeof(int));
+    for(i = 0; i < max_tmp + 1; i++){
+        max_num[i] = i;
+    }
     for(i = 0; i < num_of_cooks; i++) pthread_create(&cook_thread[i], NULL, cook, &max_num[i + 1]);
-    for(i = 0; i < num_of_cashiers; i++) pthread_create(&cashier_thread[i], NULL, cook, &max_num[i + 1]);
-    for(i = 0; i < num_of_customers; i++) pthread_create(&customer_thread[i], NULL, cook, &max_num[i + 1]);
+    for(i = 0; i < num_of_cashiers; i++) pthread_create(&cashier_thread[i], NULL, cashier, &max_num[i + 1]);
+    for(i = 0; i < num_of_customers; i++) pthread_create(&customer_thread[i], NULL, customer, &max_num[i + 1]);
     
     //* Step4 - when finish, kill threads of cooks and cashiers because they are endless loop
     pthread_t clean_up_thread;
     pthread_create(&clean_up_thread, NULL, clean_up, NULL);
-    pthread_join(clean_up, NULL);
+    pthread_join(clean_up_thread, NULL);
 
 
     //* Step5 - Clean up 
