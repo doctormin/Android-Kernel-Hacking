@@ -21,7 +21,7 @@ Operating System Prj 1
 │   │   ├── Android.mk
 │   │   └── BurgerBuddies.c
 │   └── typescrpt.txt
-└── README.md
+└── README.txt
 
 file description:
 problem1 folder ~ problem4 folder are my solution to problem1 ~ problem4.
