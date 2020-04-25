@@ -23,7 +23,7 @@ Operating System Prj 1
 │   └── typescrpt.txt
 └── README.txt
 
-file description:
-problem1 folder ~ problem4 folder are my solution to problem1 ~ problem4.
+Files description:
+problem1 folder ~ problem4 folder are my solutions to problem1 ~ problem4.
 typescrpt.txt in the 4 folders shows the outputs of my programs.
 
