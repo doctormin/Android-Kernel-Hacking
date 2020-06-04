@@ -7,7 +7,7 @@
 #include <linux/slab.h>
 #include <asm/uaccess.h> 
 
-#define VERSION "0.0.3"
+#define VERSION "0.0.4"
 #define NAME "Yimin-ptree"
 #define __NR_ptree 356
 
@@ -112,7 +112,7 @@ int ptree(struct prinfo* buf, int* nr) {
 }
 
 static int (*oldcall)(void);  // function pointer
-static int __init ptree_init(void) {
+static int ptree_init(void) {
   // syscall points to the syscall table
   long* syscall = (long*)0xc000d8c4;
   oldcall = (int (*)(void))(syscall[__NR_ptree]);  // preserve the original sys call
@@ -121,7 +121,7 @@ static int __init ptree_init(void) {
   return 0;
 }
 
-static void __exit ptree_exit(void) {
+static void ptree_exit(void) {
   long* syscall = (long*)0xc000d8c4;
   syscall[__NR_ptree] = (unsigned long)oldcall;  // retrieve the original sys call
   printk(KERN_INFO "%s: version %s unloaded successfully\n", NAME, VERSION);
