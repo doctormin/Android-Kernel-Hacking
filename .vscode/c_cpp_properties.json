@@ -18,8 +18,8 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}/**",
-                    "~/kernel/goldfish/include",
-                    "~/kernel/goldfish/arch/arm/include"
+                    "~/kernel/goldfish/include/**",
+                    "~/kernel/goldfish/arch/arm/include/**"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
