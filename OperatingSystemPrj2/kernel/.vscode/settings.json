@@ -1,9 +1,15 @@
 {
     "files.associations": {
+        "sched.h": "c",
+        "kernel.h": "c",
         "module.h": "c",
-        "*.tcc": "c",
-        "aes_glue.h": "c",
         "unistd.h": "c",
-        "ptrace.h": "c"
+        "list.h": "c",
+        "types.h": "c",
+        "syscall.h": "c",
+        "cstdarg": "c",
+        "cstdio": "c",
+        "cstdlib": "c",
+        "semaphore.h": "c"
     }
 }
