@@ -14,7 +14,7 @@
 @	compiled by GNU C version 4.8, GMP version 5.0.5, MPFR version 3.1.1, MPC version 1.0.1
 @ GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
 @ options passed:  -nostdinc
-@ -I /home/minozhao/kernel/goldfish/arch/arm/include
+@ -I /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include
 @ -I arch/arm/include/generated -I include
 @ -I arch/arm/mach-goldfish/include -imultilib armv7-a
 @ -iprefix /home/minozhao/android-ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.9/
@@ -22,7 +22,7 @@
 @ -D KBUILD_BASENAME=KBUILD_STR(bounds)
 @ -D KBUILD_MODNAME=KBUILD_STR(bounds)
 @ -isystem /home/minozhao/android-ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.9/include
-@ -include /home/minozhao/kernel/goldfish/include/linux/kconfig.h
+@ -include /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/include/linux/kconfig.h
 @ -MD kernel/.bounds.s.d kernel/bounds.c -mbionic -mlittle-endian -marm
 @ -mabi=aapcs-linux -mno-thumb-interwork -march=armv7-a -mfloat-abi=soft
 @ -mfpu=vfp -mtls-dialect=gnu -auxbase-strip kernel/bounds.s -g -Os -Wall
@@ -516,16 +516,15 @@ foo:
 	.ascii	"ZONE_HIGHMEM\000"
 .LASF4:
 	.ascii	"unsigned int\000"
-.LASF13:
-	.ascii	"PG_error\000"
+.LASF52:
+	.ascii	"/home/minozhao/Android-Kernel-Hacking/OperatingSyst"
+	.ascii	"emPrj2/kernel/goldfish\000"
 .LASF6:
 	.ascii	"long long unsigned int\000"
 .LASF37:
 	.ascii	"PG_pinned\000"
 .LASF19:
 	.ascii	"PG_slab\000"
-.LASF52:
-	.ascii	"/home/minozhao/kernel/goldfish\000"
 .LASF20:
 	.ascii	"PG_owner_priv_1\000"
 .LASF18:
@@ -550,6 +549,8 @@ foo:
 	.ascii	"PCG_USED\000"
 .LASF21:
 	.ascii	"PG_arch_1\000"
+.LASF13:
+	.ascii	"PG_error\000"
 .LASF10:
 	.ascii	"long int\000"
 .LASF44:

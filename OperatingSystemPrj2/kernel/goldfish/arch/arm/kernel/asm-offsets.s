@@ -14,7 +14,7 @@
 @	compiled by GNU C version 4.8, GMP version 5.0.5, MPFR version 3.1.1, MPC version 1.0.1
 @ GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
 @ options passed:  -nostdinc
-@ -I /home/minozhao/kernel/goldfish/arch/arm/include
+@ -I /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include
 @ -I arch/arm/include/generated -I include
 @ -I arch/arm/mach-goldfish/include -imultilib armv7-a
 @ -iprefix /home/minozhao/android-ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.9/
@@ -22,7 +22,7 @@
 @ -D KBUILD_BASENAME=KBUILD_STR(asm_offsets)
 @ -D KBUILD_MODNAME=KBUILD_STR(asm_offsets)
 @ -isystem /home/minozhao/android-ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.9/include
-@ -include /home/minozhao/kernel/goldfish/include/linux/kconfig.h
+@ -include /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/include/linux/kconfig.h
 @ -MD arch/arm/kernel/.asm-offsets.s.d arch/arm/kernel/asm-offsets.c
 @ -mbionic -mlittle-endian -marm -mabi=aapcs-linux -mno-thumb-interwork
 @ -march=armv7-a -mfloat-abi=soft -mfpu=vfp -mtls-dialect=gnu
@@ -427,7 +427,7 @@ main:
 	.file 7 "include/linux/sched.h"
 	.file 8 "include/linux/spinlock_types_up.h"
 	.file 9 "include/linux/spinlock_types.h"
-	.file 10 "/home/minozhao/kernel/goldfish/arch/arm/include/asm/processor.h"
+	.file 10 "/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/processor.h"
 	.file 11 "include/asm-generic/atomic-long.h"
 	.file 12 "include/linux/rbtree.h"
 	.file 13 "include/linux/cpumask.h"
@@ -436,12 +436,12 @@ main:
 	.file 16 "include/linux/wait.h"
 	.file 17 "include/linux/completion.h"
 	.file 18 "include/linux/mm_types.h"
-	.file 19 "/home/minozhao/kernel/goldfish/arch/arm/include/asm/pgtable-2level-types.h"
-	.file 20 "/home/minozhao/kernel/goldfish/arch/arm/include/asm/mmu.h"
+	.file 19 "/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/pgtable-2level-types.h"
+	.file 20 "/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/mmu.h"
 	.file 21 "include/linux/mm.h"
 	.file 22 "include/asm-generic/cputime.h"
 	.file 23 "include/linux/sem.h"
-	.file 24 "/home/minozhao/kernel/goldfish/arch/arm/include/asm/signal.h"
+	.file 24 "/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/signal.h"
 	.file 25 "include/asm-generic/signal-defs.h"
 	.file 26 "include/asm-generic/siginfo.h"
 	.file 27 "include/linux/signal.h"
@@ -460,14 +460,14 @@ main:
 	.file 40 "include/linux/vmstat.h"
 	.file 41 "include/linux/ioport.h"
 	.file 42 "include/linux/dma-direction.h"
-	.file 43 "/home/minozhao/kernel/goldfish/arch/arm/include/asm/cacheflush.h"
-	.file 44 "/home/minozhao/kernel/goldfish/arch/arm/include/asm/hwcap.h"
+	.file 43 "/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/cacheflush.h"
+	.file 44 "/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/hwcap.h"
 	.file 45 "include/linux/printk.h"
 	.file 46 "include/linux/kernel.h"
 	.file 47 "include/linux/bug.h"
-	.file 48 "/home/minozhao/kernel/goldfish/arch/arm/include/asm/memory.h"
+	.file 48 "/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/memory.h"
 	.file 49 "include/linux/debug_locks.h"
-	.file 50 "/home/minozhao/kernel/goldfish/arch/arm/include/asm/cachetype.h"
+	.file 50 "/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/cachetype.h"
 	.section	.debug_info,"",%progbits
 .Ldebug_info0:
 	.4byte	0x2db0
@@ -6760,8 +6760,6 @@ main:
 	.ascii	"signal\000"
 .LASF345:
 	.ascii	"_band\000"
-.LASF674:
-	.ascii	"/home/minozhao/kernel/goldfish\000"
 .LASF420:
 	.ascii	"bdata\000"
 .LASF610:
@@ -7132,6 +7130,9 @@ main:
 	.ascii	"fsuid\000"
 .LASF623:
 	.ascii	"files_struct\000"
+.LASF674:
+	.ascii	"/home/minozhao/Android-Kernel-Hacking/OperatingSyst"
+	.ascii	"emPrj2/kernel/goldfish\000"
 .LASF83:
 	.ascii	"atomic_flags\000"
 .LASF175:

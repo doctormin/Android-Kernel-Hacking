@@ -1,6 +1,8 @@
 AVD_NAME=OsPrj-518030910188
 KERNEL_ZIMG=./kernel/goldfish/arch/arm/boot/zImage
 KID=./kernel/goldfish
+TEST_DIR=./test
+exe_name=test
 
 DEST_DIR=/data/misc
 
@@ -30,11 +32,11 @@ all: help
 
 rsync:
 	for file in $(HACKING_LIST); do \
-		rsync -u hacking/$$file goldfish/$$file; \
+		rsync -u hacking/$$file kernel/goldfish/$$file; \
 	done
 
 kernel: rsync
-	make -C goldfish
+	make -C kernel/goldfish
 
 help:
 	@echo "To run the test:"
@@ -82,3 +84,13 @@ clean:
 
 handin:
 	tar --exclude-vcs -cvf Prj2+518030910211.tar .
+
+test-build:
+	@echo "testing Hello World"
+	@make -C ${TEST_DIR}
+
+test: test-build
+	@cd ./test/obj/local/armeabi && adb push ./${exe_name} data/local
+	@adb shell "cd data/local && chmod +x ./${exe_name} && ./${exe_name}" 
+
+.PHONY: test
