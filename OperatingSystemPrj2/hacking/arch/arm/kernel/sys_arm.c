@@ -27,6 +27,7 @@
 #include <linux/ipc.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
+#include <linux/Yimin_MMLimits.h>
 
 /* Fork a new task - this creates a new program thread.
  * This is called indirectly via a small wrapper
@@ -132,8 +133,8 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 	return sys_fadvise64_64(fd, offset, len, advice);
 }
 
-asmlinkage long sys_MyHelloWorld()
+asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 {
-	printk("Yimin Hello world !\n");
+	
 	return 0;
 }

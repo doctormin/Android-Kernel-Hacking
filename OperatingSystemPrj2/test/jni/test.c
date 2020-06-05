@@ -1,9 +1,9 @@
 #include <sys/syscall.h>
 #include <stdio.h>
-#define HelloWorld 59
+#define mySys 59
 
 int main(){
-    long number = syscall(HelloWorld);
+    long number = syscall(mySys, 100, 100000);
     printf("%d", number);
 }
 

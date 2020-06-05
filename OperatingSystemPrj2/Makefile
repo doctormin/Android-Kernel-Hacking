@@ -44,7 +44,7 @@ help:
 	@echo "    1. Run 'make emulator' to start the emulator."
 	@echo "    2. Run 'make testall' to run the test."
 
-emulator:
+emulator: 
 	emulator -avd ${AVD_NAME} -kernel ${KERNEL_ZIMG} -no-window -show-kernel
 
 testall: clean
@@ -85,7 +85,7 @@ clean:
 handin:
 	tar --exclude-vcs -cvf Prj2+518030910211.tar .
 
-test-build:
+test-build: 
 	@echo "testing Hello World"
 	@make -C ${TEST_DIR}
 

@@ -132,8 +132,8 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 	return sys_fadvise64_64(fd, offset, len, advice);
 }
 
-asmlinkage long sys_MyHelloWorld()
+asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 {
-	printk("Yimin Hello world !\n");
+	printk(KERN_ALERT "uid = %u  mm_max = %lu", uid, mm_max);
 	return 0;
 }
