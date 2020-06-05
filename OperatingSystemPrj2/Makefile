@@ -20,12 +20,11 @@ PRJ2_TEST=${PRJ2_TEST_DIR}/libs/armeabi/${PRJ2_TEST_NAME}
 PRJ2_TEST_DEST=${DEST_DIR}/${PRJ2_TEST_NAME}
 
 HACKING_LIST=					\
-Kconfig 						\
-mm/bz_mm_limits.c 				\
-mm/Makefile 					\
-include/linux/bz_mm_limits.h 	\
-mm/page_alloc.c 				\
-mm/bz_oom_killer.c
+arch/arm/include/asm/unistd.h   \
+arch/arm/kernel/calls.S         \
+arch/arm/kernel/sys_arm.c       \
+include/linux/syscalls.h        \
+
 
 all: help
 
