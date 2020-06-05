@@ -4,15 +4,26 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "~/Android/android-ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9/include",
                 "~/kernel/goldfish/include/**",
-                "~/kernel/goldfish/arch/arm/include/**"
+                "~/kernel/goldfish/arch/arm/include/**",
+                "~/Android/kernel/goldfish/arch/arm/mach-goldfish/include",
+                "~/Android/kernel/goldfish/include/linux/kconfig.h"
             ],
             "defines": [
                 "__KERNEL__",
                 "__GNUC__=4",
-                "_GNU_SOURCE"
+                "_GNU_SOURCE",
+                "__LINUX_ARM_ARCH__=7",
+                "CONFIG_HZ=100"
             ],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerArgs": [
+                "-nostdinc",
+                "-fno-strict-aliasing",
+                "-fno-common",
+                "-fno-pic"
+            ],
+            "compilerPath": "~/Android/android-ndk-linux/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc",
             "cStandard": "c89",
             "intelliSenseMode": "gcc-x64",
             "browse": {
