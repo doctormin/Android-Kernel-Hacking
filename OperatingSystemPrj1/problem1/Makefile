@@ -8,4 +8,4 @@ all:
 	make -C $(KID) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) M=$(shell pwd) modules
 
 clean:
-	rm -rf *.ko *.o *.mod.c *.order  *.symvers 
+	rm -rf *.ko *.o *.mod.c *.order  *.symvers  .*.cmd .tmp*
