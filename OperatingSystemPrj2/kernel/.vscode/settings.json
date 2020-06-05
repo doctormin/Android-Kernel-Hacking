@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "module.h": "c",
+        "*.tcc": "c",
+        "aes_glue.h": "c",
+        "unistd.h": "c",
+        "ptrace.h": "c"
+    }
+}
