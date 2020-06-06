@@ -604,6 +604,7 @@ deps_arch/arm/kernel/sys_arm.o := \
     $(wildcard include/config/slab.h) \
   include/linux/slab_def.h \
   include/linux/kmalloc_sizes.h \
+  include/linux/Yimin_struct.h \
 
 arch/arm/kernel/sys_arm.o: $(deps_arch/arm/kernel/sys_arm.o)
 

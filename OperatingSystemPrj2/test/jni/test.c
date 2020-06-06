@@ -4,7 +4,8 @@
 
 int main(){
     long number = syscall(mySys, 100, 100000);
-    printf("%d", number);
+    printf("%d\n", number);
+    return 0;
 }
 
 

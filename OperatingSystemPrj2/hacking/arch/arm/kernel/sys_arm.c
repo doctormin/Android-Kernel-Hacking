@@ -10,7 +10,7 @@
  *
  *  This file contains various random system calls that
  *  have a non-standard calling sequence on the Linux/arm
- *  platform.
+ *  platform. 
  */
 #include <linux/export.h>
 #include <linux/errno.h>
@@ -27,7 +27,8 @@
 #include <linux/ipc.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
-#include <linux/Yimin_MMLimits.h>
+#include <linux/Yimin_struct.h>
+
 
 /* Fork a new task - this creates a new program thread.
  * This is called indirectly via a small wrapper
@@ -135,6 +136,13 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 
 asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 {
-	
+	int i, j;
+	extern struct Yimin_struct Yimin_mm_limits;
+	for(i = 0; i < 200; i++){
+		for(j = 0; j < 2; j++){
+			printk("%ld ", Yimin_mm_limits.mm_entries[i][j]);
+		}
+		printk("\n");
+	}
 	return 0;
 }
