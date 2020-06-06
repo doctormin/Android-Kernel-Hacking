@@ -137,12 +137,37 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 {
 	int i, j;
-	extern struct Yimin_struct Yimin_mm_limits;
+	//extern struct Yimin_struct Yimin_mm_limits;
+	int updated = 0; 
 	for(i = 0; i < 200; i++){
-		for(j = 0; j < 2; j++){
-			printk("%ld ", Yimin_mm_limits.mm_entries[i][j]);
+		//already in the list and is availuable 
+		if(Yimin_mm_limits.mm_entries[i][0] == uid && Yimin_mm_limits.mm_entries[i][1] != 0){
+			//update this entry
+			Yimin_mm_limits.mm_entries[i][1] = mm_max;
+			updated = 1;
+			break;
 		}
-		printk("\n");
+	}
+	for(i = 0; i < 200; i++){
+		if(Yimin_mm_limits.mm_entries[i][1] != 0){
+			//valide entry -> print!
+			printk("uid=%d, mm_max=%d", 
+					Yimin_mm_limits.mm_entries[i][0],
+					Yimin_mm_limits.mm_entries[i][1]
+				  );
+		}
+		else if(!updated){
+			//update the entry for the target
+			Yimin_mm_limits.mm_entries[i][0] = uid;
+			Yimin_mm_limits.mm_entries[i][1] = mm_max;
+			updated = 1;
+			//print this entry (valid now)
+			printk("uid=%d,\tmm_max=%d\n", uid, mm_max);
+		}
+	}
+	if(!updated){
+		printk(KERN_ERR "Upper Bound of Memory Limit Entries (2000) Reached!");
+		return -1;
 	}
 	return 0;
 }

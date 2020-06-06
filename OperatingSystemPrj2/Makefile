@@ -27,7 +27,7 @@ arch/arm/kernel/calls.S         \
 arch/arm/kernel/sys_arm.c       \
 include/linux/syscalls.h        \
 include/linux/Yimin_struct.h    \
-mm/Yimin_mm_limits.c            \
+
 
 
 all: help
@@ -88,7 +88,6 @@ handin:
 	tar --exclude-vcs -cvf Prj2+518030910211.tar .
 
 test-build: 
-	@echo "testing Hello World"
 	@make -C ${TEST_DIR}
 
 test: test-build
