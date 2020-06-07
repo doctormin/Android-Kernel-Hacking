@@ -137,7 +137,7 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 {
 	int i, j;
-	//extern struct Yimin_struct Yimin_mm_limits;
+	extern struct Yimin_struct Yimin_mm_limits;
 	int updated = 0; 
 	for(i = 0; i < 200; i++){
 		//already in the list and is availuable 
@@ -162,7 +162,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
 			updated = 1;
 			//print this entry (valid now)
-			printk("uid=%d,\tmm_max=%d\n", uid, mm_max);
+			printk("uid=%d, \tmm_max=%d, \t", uid, mm_max);
 		}
 	}
 	if(!updated){

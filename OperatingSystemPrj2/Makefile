@@ -27,6 +27,8 @@ arch/arm/kernel/calls.S         \
 arch/arm/kernel/sys_arm.c       \
 include/linux/syscalls.h        \
 include/linux/Yimin_struct.h    \
+mm/Makefile                     \
+mm/Yimin_mm_limits.c            \
 
 
 
