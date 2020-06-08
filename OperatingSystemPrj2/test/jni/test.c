@@ -5,9 +5,9 @@
 int main(){
     //long number = syscall(mySys, 100, 100000);
 
-    long number = syscall(mySys, 10, 1000);
+    long number = syscall(mySys, 11000, 1000);
     number = syscall(mySys, 99, 1023200);
-    //number = syscall(mySys, 100, 102300);
+    number = syscall(mySys, 100, 102300);
     return 0;
 }
 
