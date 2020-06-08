@@ -605,6 +605,7 @@ deps_arch/arm/kernel/sys_arm.o := \
   include/linux/slab_def.h \
   include/linux/kmalloc_sizes.h \
   include/linux/Yimin_struct.h \
+  include/linux/Yimin_oom.h \
 
 arch/arm/kernel/sys_arm.o: $(deps_arch/arm/kernel/sys_arm.o)
 

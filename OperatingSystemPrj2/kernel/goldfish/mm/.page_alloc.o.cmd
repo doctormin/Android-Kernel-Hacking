@@ -714,6 +714,7 @@ deps_mm/page_alloc.o := \
   arch/arm/include/generated/asm/local.h \
   include/asm-generic/local.h \
   include/linux/prefetch.h \
+  include/linux/Yimin_oom.h \
   /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/tlbflush.h \
     $(wildcard include/config/cpu/tlb/v3.h) \
     $(wildcard include/config/cpu/tlb/v4wt.h) \

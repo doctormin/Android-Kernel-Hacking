@@ -27,10 +27,11 @@ arch/arm/kernel/calls.S         \
 arch/arm/kernel/sys_arm.c       \
 include/linux/syscalls.h        \
 include/linux/Yimin_struct.h    \
+include/linux/Yimin_oom.h       \
 mm/Makefile                     \
 mm/Yimin_mm_limits.c            \
 mm/page_alloc.c                 \
-mm/Yimin-oom-kill.c             \
+mm/Yimin_oom.c                  \
 
 
 

@@ -27,7 +27,9 @@
 #include <linux/ipc.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
+
 #include <linux/Yimin_struct.h>
+#include <linux/Yimin_oom.h>
 
 
 /* Fork a new task - this creates a new program thread.
@@ -138,10 +140,12 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 {
 	int i, j;
 	extern struct Yimin_struct Yimin_mm_limits;
+	extern struct mutex Yimin_mutex;
+	mutex_lock(&Yimin_mutex);
 	int updated = 0; 
 	for(i = 0; i < 200; i++){
 		//already in the list and is availuable 
-		if(Yimin_mm_limits.mm_entries[i][0] == uid && Yimin_mm_limits.mm_entries[i][1] != 0){
+		if(Yimin_mm_limits.mm_entries[i][0] == uid && Yimin_mm_limits.mm_entries[i][2] == 1){
 			//update this entry
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
 			updated = 1;
@@ -149,7 +153,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 		}
 	}
 	for(i = 0; i < 200; i++){
-		if(Yimin_mm_limits.mm_entries[i][1] != 0){
+		if(Yimin_mm_limits.mm_entries[i][2]){
 			//valide entry -> print!
 			printk("uid=%d,\t mm_max=%d\n", 
 					Yimin_mm_limits.mm_entries[i][0],
@@ -160,6 +164,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 			//update the entry for the target
 			Yimin_mm_limits.mm_entries[i][0] = uid;
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
+			Yimin_mm_limits.mm_entries[i][2] = 1;
 			updated = 1;
 			//print this entry (valid now)
 			printk("uid=%d,\t mm_max=%d\n",  uid, mm_max);
@@ -169,5 +174,8 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 		printk(KERN_ERR "Upper Bound of Memory Limit Entries (2000) Reached!");
 		return -1;
 	}
+	mutex_unlock(&Yimin_mutex);
+	//__Yimin_oom_killer();
+	
 	return 0;
 }

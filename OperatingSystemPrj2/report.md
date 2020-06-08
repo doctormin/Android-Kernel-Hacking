@@ -131,4 +131,18 @@ out:
 ```
 
 
-### Implementation of `oom-kill-process()`
+# Feature
+
+### Adding a mutex for our global varibal
+In `Yimin_struct.h`
+
+```C
+#include <linux/mutex.h>
+
+DEFINE_MUTEX(Yimin_mutex); //statically define a mutex
+
+```
+
+It should be noted that:
+ + `DEFINE_MUTEX(name)` is a static definition
+ + `mutex_init(&name)` is the dynamic initialization

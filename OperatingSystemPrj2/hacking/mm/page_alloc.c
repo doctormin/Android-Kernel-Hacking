@@ -58,6 +58,7 @@
 #include <linux/memcontrol.h>
 #include <linux/prefetch.h>
 #include <linux/page-debug-flags.h>
+#include <linux/Yimin_oom.h>
 
 #include <asm/tlbflush.h>
 #include <asm/div64.h>
@@ -2431,11 +2432,6 @@ got_pg:
 
 }
 
-void __Yimin_oom_killer()
-{
-
-}
-
 
 
 
@@ -2485,7 +2481,9 @@ retry_cpuset:
 	page = get_page_from_freelist(gfp_mask|__GFP_HARDWALL, nodemask, order,
 			zonelist, high_zoneidx, ALLOC_WMARK_LOW|ALLOC_CPUSET,
 			preferred_zone, migratetype);
-	__Yimin_oom_killer();
+
+	//__Yimin_oom_killer();
+
 	if (unlikely(!page))
 		page = __alloc_pages_slowpath(gfp_mask, order,
 				zonelist, high_zoneidx, nodemask,
