@@ -134,15 +134,10 @@ out:
 # Feature
 
 ### Adding a mutex for our global varibal
-In `Yimin_struct.h`
-
-```C
-#include <linux/mutex.h>
-
-DEFINE_MUTEX(Yimin_mutex); //statically define a mutex
-
-```
-
 It should be noted that:
  + `DEFINE_MUTEX(name)` is a static definition
  + `mutex_init(&name)` is the dynamic initialization
+
+There are sevel things which are **error-prone**:
+ + Use `DEFINE_MUTEX(name)` or `mutex_init(&name)`  in .h file $\rightarrow$ will cause linkage error if this .h file is included in more than one c file.
+ + Use `mutex_init(&name)` in one c file and use the mutex as extern variable in other c files which will lead to "undefined variable" errors because `mutex_init(&name)` is dynamic initialization rather than static definition.
