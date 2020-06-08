@@ -29,6 +29,8 @@ include/linux/syscalls.h        \
 include/linux/Yimin_struct.h    \
 mm/Makefile                     \
 mm/Yimin_mm_limits.c            \
+mm/page_alloc.c                 \
+mm/Yimin-oom-kill.c             \
 
 
 
@@ -40,7 +42,7 @@ rsync:
 	done
 
 kernel: rsync
-	make -C kernel/goldfish
+	make -j12 -C kernel/goldfish
 
 help:
 	@echo "To run the test:"

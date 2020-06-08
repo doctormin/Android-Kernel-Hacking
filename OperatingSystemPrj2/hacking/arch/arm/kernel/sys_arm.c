@@ -141,7 +141,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 	int updated = 0; 
 	for(i = 0; i < 200; i++){
 		//already in the list and is availuable 
-		if(Yimin_mm_limits.mm_entries[i][0] == uid && Yimin_mm_limits.mm_entries[i][1] != 0){
+		if(Yimin_mm_limits.mm_entries[i][0] == uid && Yimin_mm_limits.mm_entries[i][2] == 1){
 			//update this entry
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
 			updated = 1;
@@ -149,7 +149,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 		}
 	}
 	for(i = 0; i < 200; i++){
-		if(Yimin_mm_limits.mm_entries[i][1] != 0){
+		if(Yimin_mm_limits.mm_entries[i][2]){
 			//valide entry -> print!
 			printk("uid=%d,\t mm_max=%d\n", 
 					Yimin_mm_limits.mm_entries[i][0],
@@ -160,6 +160,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 			//update the entry for the target
 			Yimin_mm_limits.mm_entries[i][0] = uid;
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
+			Yimin_mm_limits.mm_entries[i][2] = 1;
 			updated = 1;
 			//print this entry (valid now)
 			printk("uid=%d,\t mm_max=%d\n",  uid, mm_max);
