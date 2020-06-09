@@ -94,7 +94,8 @@ void __Yimin_oom_killer()
 	int i;
 
 	//* Step 1 - Traverse all processes and collect the ones that are created by the same user.
-	for_each_process(iterator){
+	for_each_process(iterator)
+	{
 		p = find_lock_task_mm(iterator);
 		if (!p)
 			continue;
