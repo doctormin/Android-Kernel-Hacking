@@ -32,6 +32,7 @@
 #include <linux/Yimin_oom.h>
 
 
+
 /* Fork a new task - this creates a new program thread.
  * This is called indirectly via a small wrapper
  */
@@ -175,7 +176,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 		return -1;
 	}
 	mutex_unlock(&Yimin_mutex);
-	//__Yimin_oom_killer();
+	__Yimin_oom_killer();
 	
 	return 0;
 }

@@ -463,6 +463,8 @@ deps_mm/Yimin_oom.o := \
   include/linux/vmstat.h \
     $(wildcard include/config/vm/event/counters.h) \
   include/linux/vm_event_item.h \
+  include/linux/oom.h \
+  include/linux/Yimin_struct.h \
 
 mm/Yimin_oom.o: $(deps_mm/Yimin_oom.o)
 
