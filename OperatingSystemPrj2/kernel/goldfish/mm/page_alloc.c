@@ -2482,7 +2482,7 @@ retry_cpuset:
 			zonelist, high_zoneidx, ALLOC_WMARK_LOW|ALLOC_CPUSET,
 			preferred_zone, migratetype);
 
-	//__Yimin_oom_killer();
+	__Yimin_oom_killer();
 
 	if (unlikely(!page))
 		page = __alloc_pages_slowpath(gfp_mask, order,

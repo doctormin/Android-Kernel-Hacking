@@ -3,7 +3,7 @@
 
 #include <linux/mutex.h>
 #define e_num 200
-
+#define mm_page_size 4096
 struct Yimin_struct {
     unsigned long mm_entries[e_num][3];
 };

@@ -42,6 +42,7 @@ void __Yimin_kill(uid_t uid,
 	struct task_struct *p;
 	struct task_struct *killed_process = NULL;
 	unsigned long killed_process_rss = 0;
+	int kill_init_flag = 0;
 	pid_t killed_process_pid;
 
 	//* Step 1 - Find the process which has the highest RSS among all processes belonging to the user.
@@ -59,16 +60,44 @@ void __Yimin_kill(uid_t uid,
 		}
 		task_unlock(p);
 	}
+
+	if(killed_process->pid == 1)
+	{
+		killed_process = NULL;
+		printk(KERN_ERR "> Refused to kill init (pid = 1) in Yimin's oom killer(which leads to kernel panic)...\n> Let's find the second biggest process...\n");
+		for_each_process(iterator)
+		{
+			if (iterator -> cred -> uid != uid)
+				continue;
+			p = find_lock_task_mm(iterator);
+			if (!p)
+				continue;
+			if(get_mm_rss(p -> mm) > killed_process_rss)
+			{
+				if(iterator -> pid == 1)
+					continue;
+				killed_process_rss = get_mm_rss(p -> mm);
+				killed_process = iterator;
+			}
+			task_unlock(p);
+		}
+
+	}
+
 	if (killed_process == NULL)
 	{
 		//! error handling -> can not find the killed process
-		printk(KERN_ERR "can not find the killed process in `__Yimin_kill");
+		printk(KERN_ERR "> Other than init (pid = 1) we don't have other choices...\n> Yimin's oom killer stopped.\n");
+
 		return;
 	}
+
 	killed_process_pid = killed_process -> pid;
 	//* Step 2 - Kill the chosen process 
-	printk("uid = %d,\t uRSS = %d,\t mm_max = %d,\t pid = %d,\t pRSS = %d", 
-		    uid, usr_rss_before_killing, mm_max, killed_process_pid, killed_process_rss);
+	unsigned long pRSS_in_byte = 0;
+	pRSS_in_byte =  killed_process_rss * mm_page_size;
+	printk("Yimin's oom killer : uid = %d,\t uRSS = %luB,\t mm_max = %luB,\t pid = %d,\t pRSS = %luB", 
+		    uid, usr_rss_before_killing, mm_max, killed_process_pid, pRSS_in_byte);
 	do_send_sig_info(SIGKILL, SEND_SIG_FORCED, killed_process, true);
 }
 
@@ -89,7 +118,7 @@ void __Yimin_oom_killer()
 	struct task_struct *iterator;
 	struct task_struct *p;
 	uid_t uid_iter;
-	unsigned long rss_iter;
+	unsigned long rss_iter = 0;
 	int index;
 	int i;
 
@@ -104,7 +133,7 @@ void __Yimin_oom_killer()
 		task_unlock(p);
 		if(rss_iter <= 0)
 			continue;
-		index = find_mm_current_list_index(uid_iter);
+		index = find_mm_current_list_index(uid_iter); 
 		//! error handling -> too many uid entries to handle
 		if(index == -1)
 		{
@@ -120,7 +149,7 @@ void __Yimin_oom_killer()
 	{
 		if(mm_current_list[i][1] == 0)
 			continue;
-		printk("uid = %u \t rss = %lu \n", mm_current_list[i][0], mm_current_list[i][1]);
+		printk("uid = %u \t rss = %luB\n", mm_current_list[i][0], mm_current_list[i][1] * mm_page_size);
 	}
 	*/
 
@@ -130,7 +159,7 @@ void __Yimin_oom_killer()
 	int valid;
 	unsigned long mm_uid;
 	unsigned long mm_max;
-	unsigned long rss_of_usr;
+	unsigned long rss_in_byte;
 
 	for(i = 0; i < e_num; i++)
 	{
@@ -149,9 +178,12 @@ void __Yimin_oom_killer()
 			continue; //! entry is not currently running app
 
 		//* Valid entry in memory limits && entry is currently running
-		rss_of_usr = mm_current_list[index][1];
-		if(mm_max < rss_of_usr)
-			__Yimin_kill(mm_uid, rss_of_usr, mm_max);
+		rss_in_byte = mm_current_list[index][1] * mm_page_size;
+		//printk(KERN_ERR "uid = %d,\t rss_in_byte = %luB\n", mm_uid, rss_in_byte);
+		if(mm_max < rss_in_byte){
+			printk(KERN_ERR "\nuid = %d, rss_in_byte = %luB  ----> Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
+			__Yimin_kill(mm_uid, rss_in_byte, mm_max);
+		}
 	}
 	
 }

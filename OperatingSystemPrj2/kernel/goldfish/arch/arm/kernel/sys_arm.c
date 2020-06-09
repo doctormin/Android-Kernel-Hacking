@@ -156,7 +156,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 	for(i = 0; i < 200; i++){
 		if(Yimin_mm_limits.mm_entries[i][2]){
 			//valide entry -> print!
-			printk("uid=%d,\t mm_max=%d\n", 
+			printk("uid=%d,\t mm_max=%dB\n", 
 					Yimin_mm_limits.mm_entries[i][0],
 					Yimin_mm_limits.mm_entries[i][1]
 				  );
@@ -168,7 +168,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 			Yimin_mm_limits.mm_entries[i][2] = 1;
 			updated = 1;
 			//print this entry (valid now)
-			printk("uid=%d,\t mm_max=%d\n",  uid, mm_max);
+			printk("uid=%d,\t mm_max=%dB\n",  uid, mm_max);
 		}
 	}
 	if(!updated){
@@ -176,7 +176,6 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 		return -1;
 	}
 	mutex_unlock(&Yimin_mutex);
-	__Yimin_oom_killer();
-	
+
 	return 0;
 }
