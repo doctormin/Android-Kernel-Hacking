@@ -131,7 +131,7 @@ out:
 ```
 
 
-# Feature
+# Ultra Safety
 
 ### Adding a mutex for our global varibal
 It should be noted that:
@@ -141,3 +141,24 @@ It should be noted that:
 There are sevel things which are **error-prone**:
  + Use `DEFINE_MUTEX(name)` or `mutex_init(&name)`  in .h file $\rightarrow$ will cause linkage error if this .h file is included in more than one c file.
  + Use `mutex_init(&name)` in one c file and use the mutex as extern variable in other c files which will lead to "undefined variable" errors because `mutex_init(&name)` is dynamic initialization rather than static definition.
+
+### Adding a lock for reaching for `task_struct -> mm`
+```C
+struct task_struct *iterator;
+struct task_struct *p;
+uid_t uid_iter;
+unsigned long rss_iter;
+
+for_each_process(iterator)
+	{
+		p = find_lock_task_mm(iterator);
+		if (!p)
+			continue;
+		...
+		uid_iter = iterator -> cred -> uid;
+		rss_iter = get_mm_rss(p -> mm);
+		...
+		task_unlock(p);
+		...
+	}
+```
