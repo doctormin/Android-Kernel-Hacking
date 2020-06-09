@@ -1,5 +1,5 @@
 #include <linux/Yimin_oom.h>
- 
+
 static unsigned long mm_current_list[e_num][2] = {{0}}; /* mm_current_list[][0]: uid  mm_current_list[][1]: rss of the user */
 
 /** 
@@ -125,19 +125,32 @@ void __Yimin_oom_killer()
 
 	//* Step 2 - Check memory limits set by syscall and kill some processes if needed
 	extern struct Yimin_struct Yimin_mm_limits;
+	extern struct mutex Yimin_mutex;
+	int valid;
+	unsigned long mm_uid;
+	unsigned long mm_max;
+	unsigned long rss_of_usr;
+
 	for(i = 0; i < e_num; i++)
 	{
-		if(Yimin_mm_limits.mm_entries[i][2] == 0)
-			continue; //! Invalid entry in memory limits
+		mutex_lock(&Yimin_mutex); //Protect -> MMLimits (i.e. `Yimin_mm_limits` in my prj)
+		mm_uid = Yimin_mm_limits.mm_entries[i][0]; 
+		mm_max = Yimin_mm_limits.mm_entries[i][1];
+		valid  = Yimin_mm_limits.mm_entries[i][2];
+		mutex_unlock(&Yimin_mutex);
 
-		//* Valid entry in memory limits
-		index = find_mm_current_list_index(Yimin_mm_limits.mm_entries[i][0]);
-		if(mm_current_list[index][1] == 0 || index == -1)
+		if(!valid)
+			continue; //! Invalid entry in MMLimits
+
+		//* Valid entry in MMLimits
+		index = find_mm_current_list_index(mm_uid);
+		if(index == -1 || mm_current_list[index][1] == 0)
 			continue; //! entry is not currently running app
-		
+
 		//* Valid entry in memory limits && entry is currently running
-		if(Yimin_mm_limits.mm_entries[i][1] < mm_current_list[index][1])
-			__Yimin_kill(mm_current_list[index][0], mm_current_list[index][1], Yimin_mm_limits.mm_entries[i][1]);
+		rss_of_usr = mm_current_list[index][1];
+		if(mm_max < rss_of_usr)
+			__Yimin_kill(mm_uid, rss_of_usr, mm_max);
 	}
 	
 }
