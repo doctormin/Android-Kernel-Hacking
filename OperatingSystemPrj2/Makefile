@@ -1,5 +1,6 @@
 AVD_NAME=OsPrj-518030910188
 KERNEL_ZIMG=./kernel/goldfish/arch/arm/boot/zImage
+GOLDFISH = ./kernel/goldfish
 TEST_DIR=./test
 exe_name=test
 
@@ -10,6 +11,7 @@ arch/arm/kernel/sys_arm.c       \
 include/linux/syscalls.h        \
 include/linux/Yimin_oom.h       \
 include/linux/Yimin_struct.h    \
+mm/Kconfig                      \
 mm/Makefile                     \
 mm/page_alloc.c                 \
 mm/Yimin_mm_limits.c            \
@@ -23,7 +25,10 @@ rsync:
 	done
 
 kernel: rsync
-	make -j12 -C kernel/goldfish
+	make -j12 -C ${GOLDFISH}
+
+menuconfig: rsync
+	make menuconfig -C ${GOLDFISH}
 
 help:
 	@echo "To run the test:"
