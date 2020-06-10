@@ -139,11 +139,12 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 
 asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 {
-	int i, j;
+	int i;
+	int updated;
 	extern struct Yimin_struct Yimin_mm_limits;
 	extern struct mutex Yimin_mutex;
+	updated = 0;
 	mutex_lock(&Yimin_mutex); //Protect -> MMLimits (i.e. `Yimin_mm_limits` in my prj)
-	int updated = 0; 
 	for(i = 0; i < 200; i++){
 		//already in the list and is availuable 
 		if(Yimin_mm_limits.mm_entries[i][0] == uid && Yimin_mm_limits.mm_entries[i][2] == 1){
