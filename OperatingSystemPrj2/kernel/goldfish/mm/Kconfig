@@ -380,8 +380,8 @@ config CLEANCACHE
 
 	  If unsure, say Y to enable cleancache
 
-config MY_SETTING
+config YIMIN_SETTING
     bool "Yimin's oom killer"
     default y
     help
-		This is help message
+		This is Yimin's oom killer implemented by Yimin Zhao for Prj2 of CS356-2
