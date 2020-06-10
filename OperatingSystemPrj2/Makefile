@@ -1,5 +1,6 @@
 AVD_NAME=OsPrj-518030910188
 KERNEL_ZIMG=./kernel/goldfish/arch/arm/boot/zImage
+GOLDFISH = ./kernel/goldfish
 TEST_DIR=./test
 exe_name=test
 
@@ -23,7 +24,10 @@ rsync:
 	done
 
 kernel: rsync
-	make -j12 -C kernel/goldfish
+	make -j12 -C ${GOLDFISH}
+
+menuconfig: rsync
+	make menuconfig -C ${GOLDFISH}
 
 help:
 	@echo "To run the test:"
