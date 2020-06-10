@@ -48,8 +48,9 @@ static void __Yimin_kill(
 	unsigned long killed_process_rss;
 	pid_t killed_process_pid;
 	unsigned long pRSS_in_byte;
+	unsigned long mm_rss_tmp;
 	
-	killed_process_rss = -1;
+	killed_process_rss = 0;
 	pRSS_in_byte = 0;
 
 	//* Step 1 - Find the process which has the highest RSS among all processes belonging to the user.
@@ -58,20 +59,27 @@ static void __Yimin_kill(
 		if (iterator -> cred -> uid != uid)
 			continue;
 		p = find_lock_task_mm(iterator);
+
 		if (!p)
-			continue;
-		if(get_mm_rss(p -> mm) > killed_process_rss)
 		{
-			killed_process_rss = get_mm_rss(p -> mm);
+			//printk(KERN_ERR "> ERROR ! -> NULL returned by `find_lock_task_mm(iterator)`\n");
+			continue;
+		}
+		mm_rss_tmp = get_mm_rss(p -> mm);
+		printk(KERN_ERR "-----------> get_mm_rss(p->mm) = %lu, pid = %d, killed_process_rss = %lu\n", mm_rss_tmp, p->pid, killed_process_rss);
+		if(mm_rss_tmp > killed_process_rss)
+		{
+			killed_process_rss = mm_rss_tmp;
+			printk(KERN_ERR "-----------> Updated ! killed_process_rss = %lu\n", killed_process_rss);
 			killed_process = iterator;
 		}
 		task_unlock(p);
 	}
 
-	if (killed_process_rss == -1)
+	if (killed_process_rss == 0)
 	{
 		//! error handling
-		printk(KERN_ERR "> ERROR ! -> killed_process_rss == -1\n");
+		printk(KERN_ERR "> ERROR ! -> killed_process_rss == 0\n");
 		return;
 	}
 
