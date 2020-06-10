@@ -11,6 +11,7 @@ arch/arm/kernel/sys_arm.c       \
 include/linux/syscalls.h        \
 include/linux/Yimin_oom.h       \
 include/linux/Yimin_struct.h    \
+mm/Kconfig                      \
 mm/Makefile                     \
 mm/page_alloc.c                 \
 mm/Yimin_mm_limits.c            \
