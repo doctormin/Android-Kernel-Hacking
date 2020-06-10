@@ -57,7 +57,11 @@ static void __Yimin_kill(
 	for_each_process(iterator)
 	{
 		if (iterator -> cred -> uid != uid)
+		{
+			//printk(KERN_ERR ">>> uid = %lu\n", iterator -> cred -> uid);
 			continue;
+		}
+			
 		p = find_lock_task_mm(iterator);
 
 		if (!p)
@@ -65,22 +69,22 @@ static void __Yimin_kill(
 			//printk(KERN_ERR "> ERROR ! -> NULL returned by `find_lock_task_mm(iterator)`\n");
 			continue;
 		}
+
 		mm_rss_tmp = get_mm_rss(p -> mm);
-		printk(KERN_ERR "-----------> get_mm_rss(p->mm) = %lu, pid = %d, killed_process_rss = %lu\n", mm_rss_tmp, p->pid, killed_process_rss);
+		//printk(KERN_ERR "-----------> get_mm_rss(p->mm) = %lu, pid = %d, killed_process_rss = %lu\n", mm_rss_tmp, p->pid, killed_process_rss);
 		if(mm_rss_tmp > killed_process_rss)
 		{
 			killed_process_rss = mm_rss_tmp;
-			printk(KERN_ERR "-----------> Updated ! killed_process_rss = %lu\n", killed_process_rss);
+			//printk(KERN_ERR "-----------> Updated ! killed_process_rss = %lu\n", killed_process_rss);
 			killed_process = iterator;
 		}
-
 		task_unlock(p);
 	}
 
-	if (killed_process_rss == 0)
+	if (killed_process == NULL)
 	{
 		//! error handling
-		printk(KERN_ERR "> ERROR ! -> killed_process_rss == -1\n");
+		printk(KERN_ERR "> No killable processes\n");
 		return;
 	}
 
@@ -110,8 +114,7 @@ static void __Yimin_kill(
 	if (killed_process == NULL)
 	{
 		//! error handling -> can not find the killed process
-		printk(KERN_ERR "> ERROR ! -> killed_process = NULL\n");
-
+		printk(KERN_ERR "> No killable processes other than init (pid = 1)\n");
 		return;
 	}
 
@@ -119,8 +122,10 @@ static void __Yimin_kill(
 
 	//* Step 2 - Kill the chosen process 
 	pRSS_in_byte =  killed_process_rss * mm_page_size;
-	printk("Yimin's oom killer : uid = %lu,\t uRSS = %luB,\t mm_max = %luB,\t pid = %d,\t pRSS = %luB", 
+	
+	printk(KERN_ERR "Yimin's oom killer : uid = %lu, uRSS = %luB, mm_max = %luB, pid = %d, pRSS = %luB\n", 
 		    uid, usr_rss_before_killing, mm_max, killed_process_pid, pRSS_in_byte);
+	
 	do_send_sig_info(SIGKILL, SEND_SIG_FORCED, killed_process, true);
 }
 
@@ -153,6 +158,11 @@ void __Yimin_oom_killer(void)
 	unsigned long rss_in_byte;
 
 	rss_iter = 0;
+
+	for(i = 0; i < e_num; i++){
+		mm_current_list[i][0] = 0;
+		mm_current_list[i][1] = 0;
+	}
 
 	//* Step 1 - Traverse all processes and collect the ones that are created by the same user.
 	for_each_process(iterator)
@@ -206,7 +216,7 @@ void __Yimin_oom_killer(void)
 		rss_in_byte = mm_current_list[index][1] * mm_page_size;
 		//printk(KERN_ERR "uid = %d,\t rss_in_byte = %luB\n", mm_uid, rss_in_byte);
 		if(mm_max < rss_in_byte){
-			printk(KERN_ERR "\nuid = %lu, rss_in_byte = %luB  ----> Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
+			//printk(KERN_ERR "\nuid = %lu, rss_in_byte = %luB  ----> Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
 			__Yimin_kill(mm_uid, rss_in_byte, mm_max);
 		}
 	}

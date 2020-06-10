@@ -43,6 +43,6 @@ test-build:
 test: test-build
 	cd ./test/obj/local/armeabi && adb push ./${exe_name} data/local
 	@echo "move succeed"
-	adb shell "cd data/local && chmod +x ./${exe_name} && su 10070 ./${exe_name} u0_a70 1000000000 16000000"
+	adb shell "cd data/local && chmod +x ./${exe_name} && su 10070 ./${exe_name} u0_a70 10000000  4000000  4000000  4000000  4000000"
 
 .PHONY: test
