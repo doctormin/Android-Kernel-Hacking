@@ -2,6 +2,8 @@
 
 static unsigned long mm_current_list[e_num][2] = {{0}}; /* mm_current_list[][0]: uid  mm_current_list[][1]: rss of the user */
 
+struct timer_list Yimin_timer; 
+
 /** 
  * ! This function is called inside `__Yimin_oom_killer()`
  * 
@@ -36,11 +38,9 @@ static int find_mm_current_list_index(unsigned long uid)
  * __Yimin_kill - This function kill the process that has the highest RSS among all processes belonging to `uid`
  * @uid: The user id of the app who exceeds the memory limits set by syscall
  */
-static void __Yimin_kill(
-							uid_t uid,
-				  			unsigned long usr_rss_before_killing, 
-				  			unsigned long mm_max
-				 		)
+static void __Yimin_kill(uid_t uid,
+				  		 unsigned long usr_rss_before_killing, 
+				  		 unsigned long mm_max)
 {
 	struct task_struct *iterator;
 	struct task_struct *p;
@@ -186,14 +186,14 @@ void __Yimin_oom_killer(void)
 		mm_current_list[index][1] += rss_iter;
 	}
 	//! for debugging
-	/*
+	
 	for(i = 0; i < e_num; i++)
 	{
 		if(mm_current_list[i][1] == 0)
 			continue;
 		printk("uid = %u \t rss = %luB\n", mm_current_list[i][0], mm_current_list[i][1] * mm_page_size);
 	}
-	*/
+	
 
 	//* Step 2 - Check memory limits set by syscall and kill some processes if needed
 	for(i = 0; i < e_num; i++)
@@ -216,9 +216,21 @@ void __Yimin_oom_killer(void)
 		rss_in_byte = mm_current_list[index][1] * mm_page_size;
 		//printk(KERN_ERR "uid = %d,\t rss_in_byte = %luB\n", mm_uid, rss_in_byte);
 		if(mm_max < rss_in_byte){
-			//printk(KERN_ERR "\nuid = %lu, rss_in_byte = %luB  ----> Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
+			//printk(KERN_ERR "\nuid = %lu, rss_in_byte = %luB  ----> __Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
 			__Yimin_kill(mm_uid, rss_in_byte, mm_max);
 		}
 	}
 	
+}
+
+void Yimin_oom_killer(unsigned long data)
+{
+	printk(KERN_ERR "Yimin_oom_killer -> invoked !\n");
+	__Yimin_oom_killer();
+
+	//reset `Yimin_timer`
+	del_timer(&Yimin_timer);
+	Yimin_timer.function = Yimin_oom_killer;
+	Yimin_timer.expires = jiffies + KILLER_TIMEOUT * HZ;
+	add_timer(&Yimin_timer); 
 }

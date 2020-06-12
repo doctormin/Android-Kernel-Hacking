@@ -139,11 +139,23 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 
 asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 {
+	static flag = 0;
 	int i;
 	int updated;
 	extern struct Yimin_struct Yimin_mm_limits;
 	extern struct mutex Yimin_mutex;
+	extern struct timer_list Yimin_timer;
 	updated = 0;
+
+	//initialize Yimin_timer
+	if(!flag){
+		init_timer(&Yimin_timer);
+		Yimin_timer.function = Yimin_oom_killer;
+		Yimin_timer.expires = jiffies + KILLER_TIMEOUT * HZ;
+		add_timer(&Yimin_timer);
+		flag = 1;
+	} 
+
 	mutex_lock(&Yimin_mutex); //Protect -> MMLimits (i.e. `Yimin_mm_limits` in my prj)
 	for(i = 0; i < 200; i++){
 		//already in the list and is availuable 
@@ -173,7 +185,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 		}
 	}
 	if(!updated){
-		printk(KERN_ERR "Upper Bound of Memory Limit Entries (2000) Reached!");
+		printk(KERN_ERR "Upper Bound of Memory Limit Entries Reached!\n");
 		return -1;
 	}
 	mutex_unlock(&Yimin_mutex);

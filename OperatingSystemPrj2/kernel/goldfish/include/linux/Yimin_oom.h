@@ -7,7 +7,12 @@
 #include <linux/oom.h>
 #include <linux/Yimin_struct.h>
 #include <linux/signal.h> //for using `do_send_sig_info(...)` in __Yimin_kill(...)
+#include <linux/timer.h> //add `struct timer_list Yimin_timer`
 
-void __Yimin_oom_killer(void);
+
+#define KILLER_TIMEOUT 1 
+
+void __Yimin_oom_killer(void);           //Real killer
+void Yimin_oom_killer(unsigned long);    /*This function invokes real killer with intervals controlled by `Yimin_timer`*/
 
 #endif /*_Yimin_oom_H*/

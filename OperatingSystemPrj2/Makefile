@@ -46,8 +46,8 @@ test-build:
 	@make -C ${TEST_DIR}
 
 test: test-build
-	cd ./test/obj/local/armeabi && adb push ./${exe_name} data/local
+	cd ./test/obj/local/armeabi && adb push ./${exe_name} /
 	@echo "move succeed"
-	adb shell "cd data/local && chmod +x ./${exe_name} && su 10070 ./${exe_name} u0_a70 10000000  4000000  4000000  4000000  4000000"
+	adb shell "cd / && chmod +x ./${exe_name} && su 10070 ./${exe_name} u0_a70 10000000  4000000  4000000  4000000  4000000"
 
 .PHONY: test

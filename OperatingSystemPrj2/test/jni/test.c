@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   for (i = 3; i < argc; ++i) {
      mem = atoi(argv[i]);
      pid_t p = pids[i-3] = fork();
-     if (0 == p) {
+     if (0 == p) { //子进程中执行
         printf("child process start malloc: pid=%d, uid=%d, mem=%d\n", getpid(), getuid(), mem);
         char *m = (char*)malloc(mem);
         //memset(m, 0, mem);
