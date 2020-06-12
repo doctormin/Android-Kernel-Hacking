@@ -185,14 +185,14 @@ void __Yimin_oom_killer(void)
 		mm_current_list[index][0] =  uid_iter;
 		mm_current_list[index][1] += rss_iter;
 	}
-	//! for debugging
-	
+	//! for debugging 
+	/*
 	for(i = 0; i < e_num; i++)
 	{
 		if(mm_current_list[i][1] == 0)
 			continue;
 		printk("uid = %u \t rss = %luB\n", mm_current_list[i][0], mm_current_list[i][1] * mm_page_size);
-	}
+	}*/
 
 	//* Step 2 - Check memory limits set by syscall and kill some processes if needed
 	for(i = 0; i < e_num; i++)
@@ -224,12 +224,12 @@ void __Yimin_oom_killer(void)
 
 void Yimin_oom_killer(unsigned long data)
 {
-	printk(KERN_ERR "Yimin_oom_killer -> invoked !\n");
+	//printk(KERN_ERR "Yimin_oom_killer -> invoked !\n");
 	__Yimin_oom_killer();
 
 	//reset `Yimin_timer`
 	del_timer(&Yimin_timer);
 	Yimin_timer.function = Yimin_oom_killer;
-	Yimin_timer.expires = jiffies + KILLER_TIMEOUT * HZ;
+	Yimin_timer.expires = jiffies + KILLER_TIMEOUT;
 	add_timer(&Yimin_timer); 
 }

@@ -10,7 +10,7 @@
 #include <linux/timer.h> //add `struct timer_list Yimin_timer`
 
 
-#define KILLER_TIMEOUT 1 
+#define KILLER_TIMEOUT 5 //This is the time interval of endlessly revoke `Yimin_oom_killer` -- now 0.05s
 
 void __Yimin_oom_killer(void);           //Real killer
 void Yimin_oom_killer(unsigned long);    /*This function invokes real killer with intervals controlled by `Yimin_timer`*/
