@@ -40,7 +40,8 @@ static int find_mm_current_list_index(unsigned long uid)
  */
 static void __Yimin_kill(uid_t uid,
 				  		 unsigned long usr_rss_before_killing, 
-				  		 unsigned long mm_max)
+				  		 unsigned long mm_max
+						)
 {
 	struct task_struct *iterator;
 	struct task_struct *p;
@@ -88,10 +89,11 @@ static void __Yimin_kill(uid_t uid,
 		return;
 	}
 
-	if (killed_process->pid == 1)
+	//oom-unkillable cases (either or we panic...)
+	if (is_global_init(killed_process) || (killed_process->flags & PF_KTHREAD)) 
 	{
 		killed_process = NULL;
-		printk(KERN_ERR "> Refused to kill init (pid = 1) in Yimin's oom killer(which leads to kernel panic)...\n> Let's find the second biggest process...\n");
+		printk(KERN_ERR "> Refused to kill init (pid = 1) or kthread (pid = 1) in Yimin's oom killer(which leads to kernel panic)...\n> Let's find the second biggest process...\n");
 		for_each_process(iterator)
 		{
 			if (iterator -> cred -> uid != uid)
@@ -101,20 +103,19 @@ static void __Yimin_kill(uid_t uid,
 				continue;
 			if(get_mm_rss(p -> mm) > killed_process_rss)
 			{
-				if(iterator -> pid == 1)
+				if(iterator -> pid == 1 || iterator -> pid == 2)
 					continue;
 				killed_process_rss = get_mm_rss(p -> mm);
 				killed_process = iterator;
 			}
 			task_unlock(p);
 		}
-
 	}
 
 	if (killed_process == NULL)
 	{
 		//! error handling -> can not find the killed process
-		printk(KERN_ERR "> No killable processes other than init (pid = 1)\n");
+		printk(KERN_ERR "> No killable processes other than init (pid = 1) and kthread (pid = 2) !\n");
 		return;
 	}
 
