@@ -7,7 +7,9 @@
 #include <linux/oom.h>
 #include <linux/Yimin_struct.h>
 #include <linux/signal.h> //for using `do_send_sig_info(...)` in __Yimin_kill(...)
-#include <linux/timer.h> //add `struct timer_list Yimin_timer`
+#include <linux/timer.h>  //add `struct timer_list Yimin_timer`
+#include <linux/time.h>   //for using `void getnstimeofday`
+
 
 
 #define KILLER_TIMEOUT 3 //This is the time interval of endlessly revoke `Yimin_oom_killer` -- now 0.03s

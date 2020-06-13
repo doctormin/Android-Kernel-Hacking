@@ -137,9 +137,9 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 	return sys_fadvise64_64(fd, offset, len, advice);
 }
 
-asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
+asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long time_allow_exceed)
 {
-	static flag = 0;
+	static int flag = 0;
 	int i;
 	int updated;
 	extern struct Yimin_struct Yimin_mm_limits;
@@ -162,6 +162,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 		if(Yimin_mm_limits.mm_entries[i][0] == uid && Yimin_mm_limits.mm_entries[i][2] == 1){
 			//update this entry
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
+			Yimin_mm_limits.mm_entries[i][3] = time_allow_exceed;
 			updated = 1;
 			break;
 		}
@@ -169,9 +170,10 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 	for(i = 0; i < 200; i++){
 		if(Yimin_mm_limits.mm_entries[i][2]){
 			//valide entry -> print!
-			printk("uid=%d,\t mm_max=%dB\n", 
+			printk("uid=%d,\t mm_max=%luB,\t time_allow_exceed=%lu\n", 
 					Yimin_mm_limits.mm_entries[i][0],
-					Yimin_mm_limits.mm_entries[i][1]
+					Yimin_mm_limits.mm_entries[i][1],
+					Yimin_mm_limits.mm_entries[i][3]
 				  );
 		}
 		else if(!updated){
@@ -179,9 +181,14 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 			Yimin_mm_limits.mm_entries[i][0] = uid;
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
 			Yimin_mm_limits.mm_entries[i][2] = 1;
+			Yimin_mm_limits.mm_entries[i][3] = time_allow_exceed;
 			updated = 1;
 			//print this entry (valid now)
-			printk("uid=%d,\t mm_max=%dB\n",  uid, mm_max);
+			printk("uid=%d,\t mm_max=%luB,\t time_allow_exceed=%lu\n",  
+					uid, 
+					mm_max,
+					time_allow_exceed
+				  );
 		}
 	}
 	if(!updated){

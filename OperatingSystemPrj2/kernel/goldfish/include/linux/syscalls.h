@@ -861,5 +861,5 @@ asmlinkage long sys_process_vm_writev(pid_t pid,
 asmlinkage long sys_seccomp(unsigned int op, unsigned int flags,
 			    const char __user *uargs);
 
-asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max);
+asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long time_allow_exceed);
 #endif

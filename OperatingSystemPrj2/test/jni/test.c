@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 
   int limit = atoi(argv[2]);
   pid_t *pids = (pid_t*)malloc((argc-3)*sizeof(pid_t));
-  syscall(59, pwd_struct->pw_uid, limit);
+  syscall(59, pwd_struct->pw_uid, limit, 1000000000);
   int i, mem;
   test1();
   for (i = 3; i < argc; ++i) {

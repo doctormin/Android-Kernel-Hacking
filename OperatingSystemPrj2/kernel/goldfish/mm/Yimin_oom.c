@@ -1,6 +1,15 @@
 #include <linux/Yimin_oom.h>
 
-static unsigned long mm_current_list[e_num][2] = {{0}}; /* mm_current_list[][0]: uid  mm_current_list[][1]: rss of the user */
+static unsigned long mm_current_list[e_num][2] = {{0}}; 
+/* mm_current_list[][0]: uid  
+   mm_current_list[][1]: rss of the user 
+*/
+static unsigned long long mm_overcommit[e_num][4] = {{0}};
+/* mm_overcommit[][0]: uid  
+   mm_overcommit[][1]: exceed begin time
+   mm_overcommit[][2]: valid bit
+   mm_overcommit[][3]: touched bit //indicate whether touched during last call
+*/
 
 struct timer_list Yimin_timer; 
 
@@ -27,6 +36,23 @@ static int find_mm_current_list_index(unsigned long uid)
 		if(mm_current_list[i][0] == uid)
 			return i;
 		if(mm_current_list[i][1] == 0) //This means that this entry is empty
+			availuable_index = i;
+	}
+	return availuable_index;
+}
+
+static int find_mm_overcommit_index(unsigned long long uid)
+{
+	int i;
+	int availuable_index;
+
+	availuable_index = -1;
+
+	for(i = 0; i < e_num; i++)
+	{
+		if(mm_current_list[i][0] == uid)
+			return i;
+		if(mm_current_list[i][2] == 0) //valid bit == 0 -> untouched in last round -> empty entry
 			availuable_index = i;
 	}
 	return availuable_index;
@@ -149,20 +175,26 @@ void __Yimin_oom_killer(void)
 	uid_t uid_iter;
 	unsigned long rss_iter;
 	int index;
+	int o_index;
 	int i;
+	
 
 	extern struct Yimin_struct Yimin_mm_limits;
 	extern struct mutex Yimin_mutex;
 	int valid;
 	unsigned long mm_uid;
 	unsigned long mm_max;
+	unsigned long time_allow_exceed;
 	unsigned long rss_in_byte;
+	__u64         Yimin_time_now;
+	struct timespec Yimin_ts;
 
 	rss_iter = 0;
 
 	for(i = 0; i < e_num; i++){
 		mm_current_list[i][0] = 0;
 		mm_current_list[i][1] = 0;
+		mm_overcommit[i][3] = 0; //all set untouched
 	}
 
 	//* Step 1 - Traverse all processes and collect the ones that are created by the same user.
@@ -176,6 +208,19 @@ void __Yimin_oom_killer(void)
 		task_unlock(p);
 		if(rss_iter <= 0)
 			continue;
+		
+		
+		o_index = find_mm_overcommit_index(uid_iter);
+		//! error handling -> too many uid entries to handle
+		if(o_index == -1)
+		{
+			printk(KERN_ERR "too many uid entries to handle");
+			return;
+		}
+		mm_overcommit[o_index][0] = uid_iter;	//maintain uid -> case1: already in the entries || case2: newly come
+		mm_overcommit[o_index][2] = 1; 			//set valid
+		mm_overcommit[o_index][3] = 1; 			//set touched
+
 		index = find_mm_current_list_index(uid_iter); 
 		//! error handling -> too many uid entries to handle
 		if(index == -1)
@@ -195,13 +240,25 @@ void __Yimin_oom_killer(void)
 		printk("uid = %u \t rss = %luB\n", mm_current_list[i][0], mm_current_list[i][1] * mm_page_size);
 	}*/
 
-	//* Step 2 - Check memory limits set by syscall and kill some processes if needed
+	//* Step 2 - delete untouched item
+	for(i = 0; i < e_num; i++)
+	{
+		if(!mm_overcommit[i][3])
+		{
+			mm_overcommit[i][0] = -1;  //uid -> INT_MAX(invalid)
+			mm_overcommit[i][2] = 0;  //set invalid
+			mm_overcommit[i][1] = 0;  //overcommit begin time -> 0
+		}
+	}
+
+	//* Step 3 - Check memory limits set by syscall and kill some processes if needed
 	for(i = 0; i < e_num; i++)
 	{
 		mutex_lock(&Yimin_mutex); //Protect -> MMLimits (i.e. `Yimin_mm_limits` in my prj)
-		mm_uid = Yimin_mm_limits.mm_entries[i][0]; 
-		mm_max = Yimin_mm_limits.mm_entries[i][1];
-		valid  = Yimin_mm_limits.mm_entries[i][2];
+		mm_uid            = Yimin_mm_limits.mm_entries[i][0]; 
+		mm_max            = Yimin_mm_limits.mm_entries[i][1];
+		valid             = Yimin_mm_limits.mm_entries[i][2];
+		time_allow_exceed = Yimin_mm_limits.mm_entries[i][3];
 		mutex_unlock(&Yimin_mutex);
 
 		if(!valid)
@@ -214,10 +271,44 @@ void __Yimin_oom_killer(void)
 
 		//* Valid entry in memory limits && entry is currently running
 		rss_in_byte = mm_current_list[index][1] * mm_page_size;
+
+		o_index = find_mm_overcommit_index(mm_uid);
 		//printk(KERN_ERR "uid = %d,\t rss_in_byte = %luB\n", mm_uid, rss_in_byte);
-		if(mm_max < rss_in_byte){
-			//printk(KERN_ERR "\nuid = %lu, rss_in_byte = %luB  ----> __Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
-			__Yimin_kill(mm_uid, rss_in_byte, mm_max);
+		/*
+		*当再次遍历时，首先在另一个超时数组里面检查超时时间
+		* 1.如果rss超限	
+		* 	1.1 超时时间为0，那么写入系统时间 (第一次发现超时)
+		* 	1.2 超时时间不为0，那么求当前系统时间作差，得到超时时间
+		* 		1.2.1 假设时间没超，continue
+		*  		1.2.2 假设时间超了，那么kill
+		*			1.2.2.1 假设kill之后还是超了->下一次调用还该杀->不用改超时开始时间
+		*			1.2.2.2 假设kill之后就不超了->超时开始时间改为0
+		* 2.如果rss没超限
+		* 	更新超时时间为0
+		*/
+		//No memory overcommit -> set exceed_begin_time = 0
+		if(mm_max >= rss_in_byte)
+		{
+			mm_overcommit[o_index][1] = 0;
+		}
+
+		//Memory overcommit
+		if(mm_overcommit[o_index][1] == 0)
+		{
+			//Catched overcommit for the first time
+			getnstimeofday(&Yimin_ts);
+			mm_overcommit[o_index][1] = Yimin_ts.tv_sec * 1000000000 + Yimin_ts.tv_nsec; //in ns
+		} 
+		else
+		{
+			//Catched overcommit again
+			getnstimeofday(&Yimin_ts);
+			Yimin_time_now = Yimin_ts.tv_sec * 1000000000 +  Yimin_ts.tv_nsec; //in ns
+			if((Yimin_time_now - mm_overcommit[o_index][1]) > time_allow_exceed)
+			{
+				//printk(KERN_ERR "\nuid = %lu, rss_in_byte = %luB  ----> __Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
+				__Yimin_kill(mm_uid, rss_in_byte, mm_max);
+			}
 		}
 	}
 	
