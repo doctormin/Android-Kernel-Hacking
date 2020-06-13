@@ -6,7 +6,7 @@ static unsigned long mm_current_list[e_num][2] = {{0}};
 */
 static unsigned long long mm_overcommit[e_num][4] = {{0}};
 /* mm_overcommit[][0]: uid  
-   mm_overcommit[][1]: exceed begin time
+   mm_overcommit[][1]: memory overcommit  begin time
    mm_overcommit[][2]: valid bit
    mm_overcommit[][3]: touched bit //indicate whether touched during last call
 */
