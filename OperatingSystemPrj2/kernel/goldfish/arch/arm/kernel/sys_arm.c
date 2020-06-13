@@ -151,7 +151,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long 
 	if(!flag){
 		init_timer(&Yimin_timer);
 		Yimin_timer.function = Yimin_oom_killer;
-		Yimin_timer.expires = jiffies + KILLER_TIMEOUT;
+		Yimin_timer.expires = jiffies + KILLER_TIMEOUT; //timer interval == 0.03s
 		add_timer(&Yimin_timer);
 		flag = 1;
 	} 
@@ -170,7 +170,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long 
 	for(i = 0; i < 200; i++){
 		if(Yimin_mm_limits.mm_entries[i][2]){
 			//valide entry -> print!
-			printk("uid=%d,\t mm_max=%luB,\t time_allow_exceed=%lu\n", 
+			printk("uid=%d,\t mm_max=%luB,\t time_allow_exceed=%luns\n", 
 					Yimin_mm_limits.mm_entries[i][0],
 					Yimin_mm_limits.mm_entries[i][1],
 					Yimin_mm_limits.mm_entries[i][3]

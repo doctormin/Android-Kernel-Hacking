@@ -11,6 +11,16 @@ static unsigned long long mm_overcommit[e_num][4] = {{0}};
    mm_overcommit[][3]: touched bit //indicate whether touched during last call
 */
 
+static unsigned BIAS = 0;  //  0 <= BIAS <= BIAS_UPP   (i.e 0s ~ 0.2s)
+const static unsigned BIAS_UPP = 20;
+/**
+ *  safety = min{(mem limits for uid - mem already taken by uid) among all uids}
+ *  safety is computed every time `Yimin_oom_killer` is called
+ *	smaller safety <=> mem limits more likely to be exceeded <=> smaller BIAS
+ * 	safety <= 0    <=> limits already exceeded               <=> BIAS := BIAS_LOW
+ */
+static int safety = 0; 
+
 struct timer_list Yimin_timer; 
 
 /** 
@@ -189,6 +199,7 @@ void __Yimin_oom_killer(void)
 	__u64         Yimin_time_now;
 	struct timespec Yimin_ts;
 
+	safety = 0;
 	rss_iter = 0;
 
 	for(i = 0; i < e_num; i++){
@@ -251,7 +262,12 @@ void __Yimin_oom_killer(void)
 		}
 	}
 
-	//* Step 3 - Check memory limits set by syscall and kill some processes if needed
+	/**
+	 * Step 3 - 
+	 *		1. Check memory limits set by syscall
+	 *		2. kill some processes if needed
+	 *      3. compute `safety` => determine `BIAS` 
+	 */ 
 	for(i = 0; i < e_num; i++)
 	{
 		mutex_lock(&Yimin_mutex); //Protect -> MMLimits (i.e. `Yimin_mm_limits` in my prj)
@@ -286,6 +302,10 @@ void __Yimin_oom_killer(void)
 		* 2.如果rss没超限
 		* 	更新超时时间为0
 		*/
+		//compute `saftey`
+		if(mm_max - rss_in_byte < safety)
+			safety = (mm_max - rss_in_byte < 0) ? 0 : mm_max - rss_in_byte;
+
 		//No memory overcommit -> set exceed_begin_time = 0
 		if(mm_max >= rss_in_byte)
 		{
@@ -293,25 +313,35 @@ void __Yimin_oom_killer(void)
 		}
 
 		//Memory overcommit
-		if(mm_overcommit[o_index][1] == 0)
-		{
-			//Catched overcommit for the first time
-			getnstimeofday(&Yimin_ts);
-			mm_overcommit[o_index][1] = Yimin_ts.tv_sec * 1000000000 + Yimin_ts.tv_nsec; //in ns
-		} 
-		else
-		{
-			//Catched overcommit again
-			getnstimeofday(&Yimin_ts);
-			Yimin_time_now = Yimin_ts.tv_sec * 1000000000 +  Yimin_ts.tv_nsec; //in ns
-			if((Yimin_time_now - mm_overcommit[o_index][1]) > time_allow_exceed)
-			{
-				//printk(KERN_ERR "\nuid = %lu, rss_in_byte = %luB  ----> __Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
-				__Yimin_kill(mm_uid, rss_in_byte, mm_max);
-			}
-		}
+		else if(mm_overcommit[o_index][1] == 0)
+			 {
+				//Catched overcommit for the first time
+				getnstimeofday(&Yimin_ts);
+				mm_overcommit[o_index][1] = Yimin_ts.tv_sec * 1000000000 + Yimin_ts.tv_nsec; //in ns
+			 } 
+			 else
+			 {
+			 	//Catched overcommit again
+			 	getnstimeofday(&Yimin_ts);
+			 	Yimin_time_now = Yimin_ts.tv_sec * 1000000000 +  Yimin_ts.tv_nsec; //in ns
+				if((Yimin_time_now - mm_overcommit[o_index][1]) > time_allow_exceed)
+				{
+					//printk(KERN_ERR "\nuid = %lu, rss_in_byte = %luB  ----> __Yimin_oom_killer triggered !\n", mm_uid, rss_in_byte);
+					__Yimin_kill(mm_uid, rss_in_byte, mm_max);
+				}
+			 }
 	}
-	
+	/**
+	 * determine `BIAS` based on `safety`
+	 * 0 <= safety <= mm_max  
+	 * 0 <= BIAS   <= BIAS_UPP
+	 * we use y = ax^2 model
+	 * mm_max = a * BIAS_UPP * BIAS_UPP => a = mm_max / (BIAS_UPP * BIAS_UPP)
+	 * safety = a * BIAS * BIAS
+	 * BIAS = sqrt(safety / a)
+	 */
+	//TODO:
+	BIAS = 0;
 }
 
 void Yimin_oom_killer(unsigned long data)
@@ -322,6 +352,6 @@ void Yimin_oom_killer(unsigned long data)
 	//reset `Yimin_timer`
 	del_timer(&Yimin_timer);
 	Yimin_timer.function = Yimin_oom_killer;
-	Yimin_timer.expires = jiffies + KILLER_TIMEOUT;
+	Yimin_timer.expires = jiffies + KILLER_TIMEOUT + BIAS;  // 0.03s <= interval <= 0.23s
 	add_timer(&Yimin_timer); 
 }

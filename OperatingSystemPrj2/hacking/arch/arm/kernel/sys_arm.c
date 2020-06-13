@@ -151,7 +151,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long 
 	if(!flag){
 		init_timer(&Yimin_timer);
 		Yimin_timer.function = Yimin_oom_killer;
-		Yimin_timer.expires = jiffies + KILLER_TIMEOUT;
+		Yimin_timer.expires = jiffies + KILLER_TIMEOUT; //timer interval == 0.03s
 		add_timer(&Yimin_timer);
 		flag = 1;
 	} 
