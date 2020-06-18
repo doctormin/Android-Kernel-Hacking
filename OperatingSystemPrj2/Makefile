@@ -16,6 +16,7 @@ mm/Kconfig                      \
 mm/Makefile                     \
 mm/Yimin_mm_limits.c            \
 mm/Yimin_oom.c                  \
+mm/oom_kill.c                   \
 kernel/fork.c					\
 kernel/exit.c
 

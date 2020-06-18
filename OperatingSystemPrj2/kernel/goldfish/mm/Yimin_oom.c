@@ -1,5 +1,10 @@
 #include <linux/Yimin_oom.h>
 
+int timer_init_flag = 0;
+int timer_exit_flag = 0;
+EXPORT_SYMBOL(timer_init_flag);
+EXPORT_SYMBOL(timer_exit_flag);
+
 static unsigned long mm_current_list[e_num][2] = {{0}}; 
 /* mm_current_list[][0]: uid  
    mm_current_list[][1]: rss of the user 
@@ -22,7 +27,7 @@ const static unsigned BIAS_UPP = 20;
 static int safety = 0; 
 
 struct timer_list Yimin_timer; 
-
+EXPORT_SYMBOL(Yimin_timer);
 /** 
  * ! This function is called inside `__Yimin_oom_killer()`
  * 
@@ -60,9 +65,9 @@ static int find_mm_overcommit_index(unsigned long long uid)
 
 	for(i = 0; i < e_num; i++)
 	{
-		if(mm_current_list[i][0] == uid)
+		if(mm_overcommit[i][0] == uid)
 			return i;
-		if(mm_current_list[i][2] == 0) //valid bit == 0 -> untouched in last round -> empty entry
+		if(mm_overcommit[i][2] == 0) //valid bit == 0 -> untouched in last round -> empty entry
 			availuable_index = i;
 	}
 	return availuable_index;
@@ -346,12 +351,19 @@ void __Yimin_oom_killer(void)
 
 void Yimin_oom_killer(unsigned long data)
 {
-	//printk(KERN_ERR "Yimin_oom_killer -> invoked !\n");
+	printk(KERN_ERR "Yimin_oom_killer -> invoked !\n");
 	__Yimin_oom_killer();
 
 	//reset `Yimin_timer`
-	del_timer(&Yimin_timer);
+	extern struct mutex Yimin_mutex;
+	mutex_lock(&Yimin_mutex);
+	if(timer_exit_flag)
+		del_timer(&Yimin_timer);
 	Yimin_timer.function = Yimin_oom_killer;
 	Yimin_timer.expires = jiffies + KILLER_TIMEOUT + BIAS;  // 0.03s <= interval <= 0.23s
 	add_timer(&Yimin_timer); 
+	timer_exit_flag = 1;
+	mutex_unlock(&Yimin_mutex);
 }
+
+EXPORT_SYMBOL(Yimin_oom_killer);

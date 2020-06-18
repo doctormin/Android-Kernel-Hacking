@@ -607,6 +607,17 @@ deps_arch/arm/kernel/sys_arm.o := \
   include/linux/Yimin_struct.h \
   include/linux/Yimin_oom.h \
   include/linux/oom.h \
+  include/linux/module.h \
+    $(wildcard include/config/module/unload.h) \
+    $(wildcard include/config/constructors.h) \
+    $(wildcard include/config/debug/set/module/ronx.h) \
+  include/linux/kmod.h \
+  include/linux/elf.h \
+  include/linux/elf-em.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/elf.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/user.h \
+  include/linux/moduleparam.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/module.h \
 
 arch/arm/kernel/sys_arm.o: $(deps_arch/arm/kernel/sys_arm.o)
 

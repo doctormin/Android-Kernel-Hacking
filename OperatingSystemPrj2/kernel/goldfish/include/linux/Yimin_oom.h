@@ -5,6 +5,7 @@
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/oom.h>
+#include <linux/module.h>
 #include <linux/Yimin_struct.h>
 #include <linux/signal.h> //for using `do_send_sig_info(...)` in __Yimin_kill(...)
 #include <linux/timer.h> //add `struct timer_list Yimin_timer`
@@ -21,6 +22,6 @@ DECLARE_TRACE(Yimin_eventDoFork,
 
 DECLARE_TRACE(Yimin_eventDoExit,
 	TP_PROTO(uid_t p_uid),
-	TP_ARGS(p_uid));	
+	TP_ARGS(p_uid));
 
 #endif /*_Yimin_oom_H*/

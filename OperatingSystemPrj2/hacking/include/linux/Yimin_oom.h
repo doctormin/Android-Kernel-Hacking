@@ -5,6 +5,7 @@
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/oom.h>
+#include <linux/module.h>
 #include <linux/Yimin_struct.h>
 #include <linux/signal.h> //for using `do_send_sig_info(...)` in __Yimin_kill(...)
 #include <linux/timer.h> //add `struct timer_list Yimin_timer`
@@ -16,6 +17,10 @@ void __Yimin_oom_killer(void);           //Real killer
 void Yimin_oom_killer(unsigned long);    /*This function invokes real killer with intervals controlled by `Yimin_timer`*/
 
 DECLARE_TRACE(Yimin_eventDoFork,
+	TP_PROTO(uid_t p_uid),
+	TP_ARGS(p_uid));
+
+DECLARE_TRACE(Yimin_eventDoExit,
 	TP_PROTO(uid_t p_uid),
 	TP_ARGS(p_uid));
 
