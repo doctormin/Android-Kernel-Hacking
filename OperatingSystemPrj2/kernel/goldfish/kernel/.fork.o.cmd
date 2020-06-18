@@ -774,6 +774,8 @@ deps_kernel/fork.o := \
   include/trace/define_trace.h \
   include/trace/events/task.h \
   include/trace/ftrace.h \
+  include/linux/Yimin_oom.h \
+  include/linux/Yimin_struct.h \
   include/linux/init_task.h \
   include/linux/utsname.h \
     $(wildcard include/config/uts/ns.h) \

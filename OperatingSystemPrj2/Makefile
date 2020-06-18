@@ -3,6 +3,7 @@ KERNEL_ZIMG=./kernel/goldfish/arch/arm/boot/zImage
 GOLDFISH = ./kernel/goldfish
 TEST_DIR=./test
 exe_name=test
+TRACE_MODULE=./trace_module
 
 HACKING_LIST=					\
 arch/arm/include/asm/unistd.h   \
@@ -15,6 +16,8 @@ mm/Kconfig                      \
 mm/Makefile                     \
 mm/Yimin_mm_limits.c            \
 mm/Yimin_oom.c                  \
+kernel/fork.c					\
+kernel/exit.c
 
 all: help
 
@@ -48,5 +51,9 @@ test: test-build
 	cd ./test/obj/local/armeabi && adb push ./${exe_name} data/local
 	@echo "move succeed"
 	adb shell "cd data/local && chmod +x ./${exe_name} && su 10070 ./${exe_name} u0_a70 10000000  4000000  4000000  4000000  4000000"
+
+module:
+	make -C ${TRACE_MODULE}
+
 
 .PHONY: test

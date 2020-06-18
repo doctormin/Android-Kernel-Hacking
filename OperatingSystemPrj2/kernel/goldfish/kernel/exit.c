@@ -58,6 +58,8 @@
 #include <asm/unistd.h>
 #include <asm/pgtable.h>
 #include <asm/mmu_context.h>
+#include <linux/Yimin_oom.h>
+DEFINE_TRACE(Yimin_eventDoExit);
 
 #ifdef CONFIG_QEMU_TRACE
 void qemu_trace_thread_name(char *name);
@@ -929,6 +931,7 @@ void do_exit(long code)
 	set_fs(USER_DS);
 
 	ptrace_event(PTRACE_EVENT_EXIT, code);
+	trace_Yimin_eventDoExit(tsk->cred->uid);
 
 	validate_creds_for_do_exit(tsk);
 

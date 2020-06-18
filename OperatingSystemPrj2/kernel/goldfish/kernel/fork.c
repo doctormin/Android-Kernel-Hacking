@@ -81,6 +81,9 @@
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/task.h>
+#include <linux/Yimin_oom.h>
+
+DEFINE_TRACE(Yimin_eventDoFork);
 
 /*
  * Protected counters by write_lock_irq(&tasklist_lock)
@@ -1704,6 +1707,11 @@ long do_fork(unsigned long clone_flags,
 	} else {
 		nr = PTR_ERR(p);
 	}
+    /* //! for debugging
+	printk(KERN_ERR "new task !! -> uid = %lu, pid = %lu\n", 
+			p->cred->uid,
+			p->pid);*/
+    trace_Yimin_eventDoFork(p->cred->uid);
 	return nr;
 }
 

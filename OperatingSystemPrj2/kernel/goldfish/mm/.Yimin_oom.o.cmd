@@ -465,6 +465,11 @@ deps_mm/Yimin_oom.o := \
   include/linux/vm_event_item.h \
   include/linux/oom.h \
   include/linux/Yimin_struct.h \
+  include/linux/tracepoint.h \
+    $(wildcard include/config/tracepoints.h) \
+  include/linux/static_key.h \
+  include/linux/jump_label.h \
+    $(wildcard include/config/jump/label.h) \
 
 mm/Yimin_oom.o: $(deps_mm/Yimin_oom.o)
 
