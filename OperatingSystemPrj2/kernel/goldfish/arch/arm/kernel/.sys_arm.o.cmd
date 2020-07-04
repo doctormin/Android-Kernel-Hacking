@@ -618,6 +618,8 @@ deps_arch/arm/kernel/sys_arm.o := \
   /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/user.h \
   include/linux/moduleparam.h \
   /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/module.h \
+  include/linux/delay.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/delay.h \
 
 arch/arm/kernel/sys_arm.o: $(deps_arch/arm/kernel/sys_arm.o)
 

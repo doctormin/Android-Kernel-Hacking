@@ -776,6 +776,8 @@ deps_kernel/fork.o := \
   include/trace/ftrace.h \
   include/linux/Yimin_oom.h \
   include/linux/Yimin_struct.h \
+  include/linux/delay.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/delay.h \
   include/linux/init_task.h \
   include/linux/utsname.h \
     $(wildcard include/config/uts/ns.h) \

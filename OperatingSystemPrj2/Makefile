@@ -37,7 +37,6 @@ help:
 	@echo "To run the test:"
 	@echo "    0. Run 'make kernel' to update hacking files and rebuild the kernel."
 	@echo "    1. Run 'make emulator' to start the emulator."
-	@echo "    2. Run 'make testall' to run the test."
 
 emulator: 
 	emulator -avd ${AVD_NAME} -kernel ${KERNEL_ZIMG} -no-window -show-kernel
@@ -51,7 +50,7 @@ test-build:
 test: test-build
 	cd ./test/obj/local/armeabi && adb push ./${exe_name} data/local
 	@echo "move succeed"
-	adb shell "cd data/local && chmod +x ./${exe_name} && su 10070 ./${exe_name} u0_a70 10000000  4000000  4000000  4000000  4000000"
+	adb shell "cd data/local && chmod +x ./${exe_name} && su 10070 ./${exe_name} u0_a70 10000000  5000000  6000000  4000000  4000000"
 
 module:
 	make -C ${TRACE_MODULE}

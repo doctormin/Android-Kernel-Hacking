@@ -834,6 +834,8 @@ deps_kernel/exit.o := \
   include/asm-generic/mm_hooks.h \
   include/linux/Yimin_oom.h \
   include/linux/Yimin_struct.h \
+  include/linux/delay.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/delay.h \
 
 kernel/exit.o: $(deps_kernel/exit.o)
 

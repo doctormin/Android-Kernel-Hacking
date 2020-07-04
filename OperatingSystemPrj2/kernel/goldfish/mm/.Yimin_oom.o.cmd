@@ -497,6 +497,8 @@ deps_mm/Yimin_oom.o := \
   /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/module.h \
     $(wildcard include/config/arm/unwind.h) \
   include/linux/Yimin_struct.h \
+  include/linux/delay.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/delay.h \
 
 mm/Yimin_oom.o: $(deps_mm/Yimin_oom.o)
 

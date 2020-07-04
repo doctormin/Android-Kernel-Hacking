@@ -512,6 +512,8 @@ deps_/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/trace_module/trac
   include/linux/vm_event_item.h \
   include/linux/oom.h \
   include/linux/Yimin_struct.h \
+  include/linux/delay.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/delay.h \
 
 /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/trace_module/trace_module.o: $(deps_/home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/trace_module/trace_module.o)
 
