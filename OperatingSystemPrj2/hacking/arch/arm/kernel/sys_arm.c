@@ -150,6 +150,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long 
 	//initialize Yimin_timer
 	if(!flag){
 		init_timer(&Yimin_timer);
+		printk(KERN_ERR "timer initialized!\n");
 		Yimin_timer.function = Yimin_oom_killer;
 		Yimin_timer.expires = jiffies + KILLER_TIMEOUT; //timer interval == 0.03s
 		add_timer(&Yimin_timer);
@@ -184,7 +185,7 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long 
 			Yimin_mm_limits.mm_entries[i][3] = time_allow_exceed;
 			updated = 1;
 			//print this entry (valid now)
-			printk("uid=%d,\t mm_max=%luB,\t time_allow_exceed=%lu\n",  
+			printk("uid=%d,\t mm_max=%luB,\t time_allow_exceed=%luns\n",  
 					uid, 
 					mm_max,
 					time_allow_exceed
