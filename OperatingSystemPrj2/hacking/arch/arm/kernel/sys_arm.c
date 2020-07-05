@@ -145,16 +145,25 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long 
 	extern struct Yimin_struct Yimin_mm_limits;
 	extern struct mutex Yimin_mutex;
 	extern struct timer_list Yimin_timer;
+	extern int timer_init_flag;
+	extern int timer_exit_flag;
 	updated = 0;
 
 	//initialize Yimin_timer
 	if(!flag){
+		mutex_lock(&Yimin_mutex);
 		init_timer(&Yimin_timer);
+<<<<<<< HEAD
 		printk(KERN_ERR "timer initialized!\n");
+=======
+		timer_init_flag = 1;
+>>>>>>> add_tracepoint
 		Yimin_timer.function = Yimin_oom_killer;
 		Yimin_timer.expires = jiffies + KILLER_TIMEOUT; //timer interval == 0.03s
 		add_timer(&Yimin_timer);
+		timer_exit_flag = 1;
 		flag = 1;
+		mutex_unlock(&Yimin_mutex);
 	} 
 
 	mutex_lock(&Yimin_mutex); //Protect -> MMLimits (i.e. `Yimin_mm_limits` in my prj)

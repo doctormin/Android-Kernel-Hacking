@@ -21,7 +21,6 @@ struct proc_dir_entry *pentry_sample;
 static int my_open(struct inode *inode, struct file *file)
 {
 	int i;
-
 	trace_subsys_event(inode, file);
 	for (i = 0; i < 10; i++)
 		trace_subsys_eventb();

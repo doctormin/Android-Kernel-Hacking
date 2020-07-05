@@ -610,14 +610,27 @@ deps_mm/oom_kill.o := \
     $(wildcard include/config/old/mcount.h) \
     $(wildcard include/config/arm/unwind.h) \
   include/linux/ratelimit.h \
-  include/trace/events/oom.h \
-  include/linux/tracepoint.h \
+  include/linux/module.h \
     $(wildcard include/config/tracepoints.h) \
+    $(wildcard include/config/event/tracing.h) \
+    $(wildcard include/config/module/unload.h) \
+    $(wildcard include/config/constructors.h) \
+    $(wildcard include/config/debug/set/module/ronx.h) \
+  include/linux/kmod.h \
+  include/linux/elf.h \
+  include/linux/elf-em.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/elf.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/user.h \
+  include/linux/moduleparam.h \
+    $(wildcard include/config/alpha.h) \
+    $(wildcard include/config/ppc64.h) \
+  include/linux/tracepoint.h \
   include/linux/static_key.h \
   include/linux/jump_label.h \
     $(wildcard include/config/jump/label.h) \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/module.h \
+  include/trace/events/oom.h \
   include/trace/define_trace.h \
-    $(wildcard include/config/event/tracing.h) \
   include/trace/ftrace.h \
   include/linux/ftrace_event.h \
   include/linux/ring_buffer.h \

@@ -464,7 +464,41 @@ deps_mm/Yimin_oom.o := \
     $(wildcard include/config/vm/event/counters.h) \
   include/linux/vm_event_item.h \
   include/linux/oom.h \
+  include/linux/module.h \
+    $(wildcard include/config/sysfs.h) \
+    $(wildcard include/config/unused/symbols.h) \
+    $(wildcard include/config/kallsyms.h) \
+    $(wildcard include/config/tracepoints.h) \
+    $(wildcard include/config/event/tracing.h) \
+    $(wildcard include/config/module/unload.h) \
+    $(wildcard include/config/constructors.h) \
+    $(wildcard include/config/debug/set/module/ronx.h) \
+  include/linux/stat.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/stat.h \
+  include/linux/kmod.h \
+  include/linux/elf.h \
+  include/linux/elf-em.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/elf.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/user.h \
+  include/linux/kobject.h \
+  include/linux/sysfs.h \
+  include/linux/kobject_ns.h \
+  include/linux/kref.h \
+  include/linux/moduleparam.h \
+    $(wildcard include/config/alpha.h) \
+    $(wildcard include/config/ppc64.h) \
+  include/linux/tracepoint.h \
+  include/linux/static_key.h \
+  include/linux/jump_label.h \
+    $(wildcard include/config/jump/label.h) \
+  include/linux/export.h \
+    $(wildcard include/config/symbol/prefix.h) \
+    $(wildcard include/config/modversions.h) \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/module.h \
+    $(wildcard include/config/arm/unwind.h) \
   include/linux/Yimin_struct.h \
+  include/linux/delay.h \
+  /home/minozhao/Android-Kernel-Hacking/OperatingSystemPrj2/kernel/goldfish/arch/arm/include/asm/delay.h \
 
 mm/Yimin_oom.o: $(deps_mm/Yimin_oom.o)
 
