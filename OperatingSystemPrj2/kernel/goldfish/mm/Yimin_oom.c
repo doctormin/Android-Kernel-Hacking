@@ -220,7 +220,7 @@ void __Yimin_oom_killer(void)
 	unsigned long mm_max;
 	unsigned long time_allow_exceed;
 	unsigned long rss_in_byte;
-	__u64         Yimin_time_now;
+	unsigned long long  Yimin_time_now;
 	struct timespec Yimin_ts;
 
 	safety = 2000000000; //Before scanning, nothing found -> very safe
@@ -344,14 +344,17 @@ void __Yimin_oom_killer(void)
 			 {
 				//Catched exceeding for the first timem -> record the time of starting exceeding
 				getnstimeofday(&Yimin_ts);
-				mm_exceed[o_index][1] = Yimin_ts.tv_sec * 1000000000 + Yimin_ts.tv_nsec; //in ns
+				mm_exceed[o_index][1] = Yimin_ts.tv_sec; //in s 
 			 } 
 			 else
 			 {
 			 	//Catched exceeding again -> check if the exceeding time is longer than the allowed time
 			 	getnstimeofday(&Yimin_ts);
-			 	Yimin_time_now = Yimin_ts.tv_sec * 1000000000 +  Yimin_ts.tv_nsec; //in ns
-				if((Yimin_time_now - mm_exceed[o_index][1]) > time_allow_exceed)
+			 	Yimin_time_now = Yimin_ts.tv_sec; //in s
+				printk(KERN_ERR "tv_sec = %lus\n", Yimin_ts.tv_sec);
+				//printk(KERN_ERR "tv_nsec = %luns\n", Yimin_ts.tv_nsec);
+				//printk(KERN_ERR "time now is %luns\n", Yimin_time_now);
+				if((Yimin_ts.tv_sec - mm_exceed[o_index][1]) >= time_allow_exceed)
 				{
 					//time_allow_exceed exceeded! -> kill one process of the user
 					__Yimin_kill(mm_uid, rss_in_byte, mm_max);
@@ -391,7 +394,7 @@ void Yimin_oom_killer(unsigned long data)
 	if(timer_exit_flag)
 		del_timer(&Yimin_timer);
 	Yimin_timer.function = Yimin_oom_killer;
-	Yimin_timer.expires = jiffies + KILLER_TIMEOUT + BIAS;  // 0.02s <= interval <= 0.22s
+	Yimin_timer.expires = jiffies + KILLER_TIMEOUT + 0;  // 0.02s <= interval <= 0.22s
 	add_timer(&Yimin_timer); 
 	timer_exit_flag = 1;
 	mutex_unlock(&Yimin_mutex);
