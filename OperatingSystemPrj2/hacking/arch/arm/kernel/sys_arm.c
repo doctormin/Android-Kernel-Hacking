@@ -137,19 +137,33 @@ asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 	return sys_fadvise64_64(fd, offset, len, advice);
 }
 
-asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
+asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max, unsigned long time_allow_exceed)
 {
+	static int flag = 0;
 	int i;
 	int updated;
 	extern struct Yimin_struct Yimin_mm_limits;
 	extern struct mutex Yimin_mutex;
+	extern struct timer_list Yimin_timer;
 	updated = 0;
+
+	//initialize Yimin_timer
+	if(!flag){
+		init_timer(&Yimin_timer);
+		printk(KERN_ERR "timer initialized!\n");
+		Yimin_timer.function = Yimin_oom_killer;
+		Yimin_timer.expires = jiffies + KILLER_TIMEOUT; //timer interval == 0.03s
+		add_timer(&Yimin_timer);
+		flag = 1;
+	} 
+
 	mutex_lock(&Yimin_mutex); //Protect -> MMLimits (i.e. `Yimin_mm_limits` in my prj)
 	for(i = 0; i < 200; i++){
 		//already in the list and is availuable 
 		if(Yimin_mm_limits.mm_entries[i][0] == uid && Yimin_mm_limits.mm_entries[i][2] == 1){
 			//update this entry
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
+			Yimin_mm_limits.mm_entries[i][3] = time_allow_exceed;
 			updated = 1;
 			break;
 		}
@@ -157,9 +171,10 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 	for(i = 0; i < 200; i++){
 		if(Yimin_mm_limits.mm_entries[i][2]){
 			//valide entry -> print!
-			printk("uid=%d,\t mm_max=%dB\n", 
+			printk("uid=%d,\t mm_max=%luB,\t time_allow_exceed=%luns\n", 
 					Yimin_mm_limits.mm_entries[i][0],
-					Yimin_mm_limits.mm_entries[i][1]
+					Yimin_mm_limits.mm_entries[i][1],
+					Yimin_mm_limits.mm_entries[i][3]
 				  );
 		}
 		else if(!updated){
@@ -167,13 +182,18 @@ asmlinkage long sys_set_mm_limit(uid_t uid, unsigned long mm_max)
 			Yimin_mm_limits.mm_entries[i][0] = uid;
 			Yimin_mm_limits.mm_entries[i][1] = mm_max;
 			Yimin_mm_limits.mm_entries[i][2] = 1;
+			Yimin_mm_limits.mm_entries[i][3] = time_allow_exceed;
 			updated = 1;
 			//print this entry (valid now)
-			printk("uid=%d,\t mm_max=%dB\n",  uid, mm_max);
+			printk("uid=%d,\t mm_max=%luB,\t time_allow_exceed=%luns\n",  
+					uid, 
+					mm_max,
+					time_allow_exceed
+				  );
 		}
 	}
 	if(!updated){
-		printk(KERN_ERR "Upper Bound of Memory Limit Entries (2000) Reached!");
+		printk(KERN_ERR "Upper Bound of Memory Limit Entries Reached!\n");
 		return -1;
 	}
 	mutex_unlock(&Yimin_mutex);
